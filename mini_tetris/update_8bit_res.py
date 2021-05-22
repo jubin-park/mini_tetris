@@ -4,6 +4,8 @@ import glob
 INPUT_PATH = "res"
 OUTPUT_PATH = "headers"
 
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+
 for path in glob.glob("./%s/*.c" % INPUT_PATH):
     # read
     f = open(path, "r")
