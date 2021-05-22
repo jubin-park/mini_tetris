@@ -1,0 +1,20 @@
+#include <stdint.h>
+
+#define FULL_FRAME_COUNT 1
+
+/* Piskel data for "full" */
+
+static const uint8_t full_data[1][10] = {
+{
+0x7f,
+0x7f,
+0x7f,
+0x7f,
+0x7f,
+0x7f,
+0x7f,
+0x7f,
+0x7f,
+0x7f
+}
+};
