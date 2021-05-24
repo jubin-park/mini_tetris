@@ -20,7 +20,7 @@
 
 enum {
     LED_MAJOR = 262,
-    LED_ADDRESS = 0x08000210,
+    LED_ADDRESS = 0x08000016,
     
     MAPPING_BYTE_LENGTH = 20,
 
