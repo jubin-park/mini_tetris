@@ -45,7 +45,11 @@ int main(int argc, char* argv[])
         }
     }
 
+<<<<<<< HEAD
     fd = open("/dev/csemad_led", O_RDWR);
+=======
+    fd = open("/dev/led_driver", O_RDWR);
+>>>>>>> 311a9b7... add: drivers
     if (fd < 0) {
         printf("failed to open driver 'led'\n");
 

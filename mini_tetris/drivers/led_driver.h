@@ -16,9 +16,15 @@
 #include <linux/init.h>
 #include <linux/version.h>
 
+<<<<<<< HEAD
 #define LED_MAJOR (260)
 #define LED_NAME ("csemad_led")
 #define LED_ADDRESS (0x08000016)
+=======
+#define LED_MAJOR 260
+#define LED_NAME "led"
+#define LED_ADDRESS 0x08000016
+>>>>>>> 311a9b7... add: drivers
 
 static int led_open(struct inode* minode, struct file* mfile);
 static int led_release(struct inode* minode, struct file* mfile);

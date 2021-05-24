@@ -16,7 +16,11 @@
 #include <linux/init.h>
 #include <linux/version.h>
 
+<<<<<<< HEAD
 #define DOT_MATRIX_NAME ("csemad_dot_matrix")
+=======
+#define DOT_MATRIX_NAME "dot_matrix"
+>>>>>>> 311a9b7... add: drivers
 
 enum {
     DOT_MATRIX_MAJOR = 262,
