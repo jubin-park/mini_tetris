@@ -19,7 +19,7 @@
 #define LED_NAME ("csemad_led")
 
 enum {
-    LED_MAJOR = 262,
+    LED_MAJOR = 260,
     LED_ADDRESS = 0x08000016,
     
     MAPPING_BYTE_LENGTH = 20,
