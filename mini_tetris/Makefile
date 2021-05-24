@@ -9,7 +9,7 @@ all: driver app
 driver:
 	$(MAKE) -C $(KDIR) SUBDIRS=$(PWD) modules
 	sudo rmmod dot_matrix_driver led_driver
-	sudo insmod $(DRIVER_DIR)/dot_matrix_driver.o sudo$(DRIVER_DIR)/led_driver.o
+	sudo insmod $(DRIVER_DIR)/dot_matrix_driver.ko sudo$(DRIVER_DIR)/led_driver.ko
 
 app:
 	gcc -std=c99 -W -Wall -pedantic -static -o app_game app_game.c
