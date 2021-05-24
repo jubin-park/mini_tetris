@@ -48,7 +48,7 @@ int main(int argc, char* argv[])
     fd = open("/dev/csemad_led", O_RDWR);
 
     if (fd < 0) {
-        printf("failed to open driver 'led'\n");
+        printf("failed to open driver 'csemad_led'\n");
 
         return -1;			
     }
