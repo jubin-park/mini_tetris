@@ -21,11 +21,8 @@
 enum {
     LED_MAJOR = 260,
     LED_ADDRESS = 0x08000016,
-    
-    MAPPING_BYTE_LENGTH = 20,
 
-    ROW_COUNT = 10,
-    COLUMN_COUNT = 7,
+    MAPPING_BYTE_LENGTH = 1,
 };
 
 static int led_open(struct inode* minode, struct file* mfile);

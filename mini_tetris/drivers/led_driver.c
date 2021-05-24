@@ -14,7 +14,7 @@ static int __init led_init(void)
         return 1;
     }
 
-    g_led_addr = (unsigned char*)ioremap(LED_ADDRESS, 1);
+    g_led_addr = (unsigned char*)ioremap(LED_ADDRESS, MAPPING_BYTE_LENGTH);
     return 0;
 }
 
@@ -52,7 +52,7 @@ static ssize_t led_read(struct file* inode, char* gdata, size_t length, loff_t* 
 {
     printk(KERN_ALERT "led_read!\n");
 
-    if (0 != copy_to_user(gdata, g_led_addr, 1)) {
+    if (0 != copy_to_user(gdata, g_led_addr, MAPPING_BYTE_LENGTH)) {
         printk(KERN_ALERT "led_read failed: -EFAULT\n");
         return -EFAULT;
     }
@@ -67,7 +67,7 @@ static ssize_t led_write(struct file* inode, const char* gdata, size_t length, l
 {
     printk(KERN_ALERT "led_write!\n");
 
-    if (0 != copy_from_user(g_led_addr, gdata, 1)) {
+    if (0 != copy_from_user(g_led_addr, gdata, MAPPING_BYTE_LENGTH)) {
         printk(KERN_ALERT "led_write failed: -EFAULT\n");
         return -EFAULT;
     }

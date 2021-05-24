@@ -23,9 +23,6 @@ enum {
     DOT_MATRIX_ADDRESS = 0x08000210,
     
     MAPPING_BYTE_LENGTH = 20,
-
-    ROW_COUNT = 10,
-    COLUMN_COUNT = 7,
 };
 
 static int dot_matrix_open(struct inode* minode, struct file* mfile);
