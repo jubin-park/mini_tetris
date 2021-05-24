@@ -25,12 +25,12 @@ enum {
     MAPPING_BYTE_LENGTH = 20,
 };
 
+static int __init dot_matrix_init(void);
+static void __exit dot_matrix_exit(void);
 static int dot_matrix_open(struct inode* minode, struct file* mfile);
 static int dot_matrix_release(struct inode* minode, struct file* mfile);
 static ssize_t dot_matrix_read(struct file* inode, char* gdata, size_t length, loff_t* off_what);
 static ssize_t dot_matrix_write(struct file* inode, const char* gdata, size_t length, loff_t* off_what);
-static int __init dot_matrix_init(void);
-static void __exit dot_matrix_exit(void);
 
 static struct file_operations dot_matrix_fops =
 {

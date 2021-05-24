@@ -25,6 +25,8 @@ enum {
     MAPPING_BYTE_LENGTH = 1,
 };
 
+static int __init led_init(void);
+static void __exit led_exit(void);
 static int led_open(struct inode* minode, struct file* mfile);
 static int led_release(struct inode* minode, struct file* mfile);
 static ssize_t led_read(struct file* inode, char* gdata, size_t length, loff_t* off_what);

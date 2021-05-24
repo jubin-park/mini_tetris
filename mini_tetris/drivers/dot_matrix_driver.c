@@ -1,6 +1,6 @@
 #include "dot_matrix_driver.h"
 
-static int s_is_dot_matrix_using = 0;
+static int s_usage = 0;
 static unsigned char* s_dot_matrix_addr;
  
 static int __init dot_matrix_init(void)
@@ -30,12 +30,12 @@ static int dot_matrix_open(struct inode* minode, struct file* mfile)
 {
     printk(KERN_ALERT "dot_matrix_open!\n");
 
-    if (s_is_dot_matrix_using != 0) {
+    if (s_usage != 0) {
         printk(KERN_ALERT "dot_matrix_open failed: -EBUSY\n");
         return -EBUSY;
     }
 
-    s_is_dot_matrix_using = 1;
+    s_usage = 1;
 
     return 0;
 }
@@ -43,7 +43,7 @@ static int dot_matrix_open(struct inode* minode, struct file* mfile)
 static int dot_matrix_release(struct inode* minode, struct file* mfile)
 {
     printk(KERN_ALERT "dot_matrix_release!\n");
-    s_is_dot_matrix_using = 0;
+    s_usage = 0;
 
     return 0;
 }
