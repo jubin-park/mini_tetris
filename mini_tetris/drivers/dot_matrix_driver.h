@@ -18,7 +18,7 @@
 
 #define DOT_MATRIX_NAME ("csemad_dot_matrix")
 
-enum {
+static enum {
     DOT_MATRIX_MAJOR = 262,
     DOT_MATRIX_ADDRESS = 0x08000210,
     

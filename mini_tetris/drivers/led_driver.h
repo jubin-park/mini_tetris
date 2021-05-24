@@ -16,9 +16,17 @@
 #include <linux/init.h>
 #include <linux/version.h>
 
-#define LED_MAJOR (260)
 #define LED_NAME ("csemad_led")
-#define LED_ADDRESS (0x08000016)
+
+static enum {
+    LED_MAJOR = 262,
+    LED_ADDRESS = 0x08000210,
+    
+    MAPPING_BYTE_LENGTH = 20,
+
+    ROW_COUNT = 10,
+    COLUMN_COUNT = 7,
+};
 
 static int led_open(struct inode* minode, struct file* mfile);
 static int led_release(struct inode* minode, struct file* mfile);
