@@ -1,6 +1,6 @@
 #include "dot_matrix_driver.h"
 
-static int s_usage = 0;
+static unsigned char s_usage = 0;
 static unsigned char* s_dot_matrix_addr;
  
 static int __init dot_matrix_init(void)

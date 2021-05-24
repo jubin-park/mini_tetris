@@ -1,6 +1,6 @@
 #include "led_driver.h"
 
-static int s_usage;
+static unsigned char s_usage;
 static unsigned char* s_led_addr;
 
 static int __init led_init(void)
