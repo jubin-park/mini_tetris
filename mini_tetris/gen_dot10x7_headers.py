@@ -2,7 +2,7 @@ import os
 import glob
 
 INPUT_PATH = "res"
-OUTPUT_PATH = "headers"
+OUTPUT_PATH = "dot10x7"
 
 os.makedirs(OUTPUT_PATH, exist_ok=True)
 
