@@ -8,7 +8,6 @@ all: driver app
 
 driver:
 	$(MAKE) -C $(KDIR) SUBDIRS=$(PWD) modules
-	sudo rmmod dot_matrix_driver led_driver
 	sudo insmod $(DRIVER_DIR)/dot_matrix_driver.ko sudo$(DRIVER_DIR)/led_driver.ko
 
 app:
@@ -17,3 +16,4 @@ app:
 clean:
 	rm -rf *.ko *.mod.* *.o app_game Module.symvers modules.order .led* .tmp* 
 	rm -rf $(DRIVER_DIR)/*.ko $(DRIVER_DIR)/*.mod.* $(DRIVER_DIR)/*.o
+	sudo rmmod dot_matrix_driver led_driver
