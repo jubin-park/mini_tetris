@@ -18,24 +18,24 @@ int main(int argc, char **argv)
 
     memset(data, 0, sizeof(data));
     
-    if(argc != 2) 
+    if (argc != 2) 
     {
         printf("please input the parameter! \n");
-        printf("ex)./test_led a1\n");
+        printf("ex)./seven_segment_test_app <int value>\n");
         return -1;
     }
     
     str_size = (strlen(argv[1]));
     
-    if(str_size > MAX_DIGIT)
+    if (str_size > MAX_DIGIT)
     {
         printf("Warning! 4 Digit number only!\n");
         str_size = MAX_DIGIT;
     }
     
-    for(i = 0;i < str_size; i++)
+    for (i = 0; i < str_size; i++)
     {
-        if((argv[1][i] < 0x30)||(argv[1][i]) > 0x39) 
+        if ((argv[1][i] < 0x30) || (argv[1][i]) > 0x39) 
         {
             printf("Error! Invalid Value!\n");
             return -1;
@@ -54,7 +54,7 @@ int main(int argc, char **argv)
     
     retval = write(dev, &data, 4);
     
-    if(retval < 0) 
+    if (retval < 0) 
     {
         printf("Write Error!\n");
         return -1;
@@ -64,9 +64,9 @@ int main(int argc, char **argv)
     
     sleep(1);
     
-    retval=read(dev, &data, 4);
+    retval = read(dev, &data, 4);
     
-    if(retval < 0) 
+    if (retval < 0) 
     {
         printf("Read Error!\n");
         return -1;
@@ -74,7 +74,7 @@ int main(int argc, char **argv)
     
     printf("Current FND Value : ");
 
-    for(i = 0;i < str_size; i++)
+    for (i = 0; i < str_size; i++)
         printf("%d", data[i]);
     
     printf("\n");
