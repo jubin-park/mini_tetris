@@ -69,23 +69,19 @@ int main(int argc, char* argv[])
         .angle = ANGLE_0
     };
     uint32_t game_frame = 0;
-    unsigned char old_buffer[ROW_COUNT] = { 0b01100001, 0b0111101 };
+    unsigned char old_buffer[ROW_COUNT] = { 0 };
 
     while (g_is_game_running)
     {
         unsigned char display_buffer[ROW_COUNT];
         memcpy(display_buffer, old_buffer, ROW_COUNT * sizeof(unsigned char));
 
-        
-
-
-
         // TODO: draw block
         unsigned char line[3] = {
             (block1[ANGLE_0][0][0] << 2) | (block1[ANGLE_0][0][1] << 1) | block1[ANGLE_0][0][2],
             (block1[ANGLE_0][1][0] << 2) | (block1[ANGLE_0][1][1] << 1) | block1[ANGLE_0][1][2],
-            (block1[ANGLE_0][2][0] << 2) | (block1[ANGLE_0][2][1] << 1) | block1[ANGLE_0][2][2];
-        }
+            (block1[ANGLE_0][2][0] << 2) | (block1[ANGLE_0][2][1] << 1) | block1[ANGLE_0][2][2]
+        };
 
         for (int r = 0; r < 3; ++r) {
             display_buffer[now_block.y + r][now_block.x] |= line[r] << (6 - now_block.x);
