@@ -53,7 +53,7 @@ int main(int argc, char* argv[])
         for (i = 0; i < DRIVER_SIZE; ++i) {
             has_error |= fd[i] < 0;
             printf("Loading driver '%s' ... ", DRIVER_NAMES[i]);
-            puts(fd[i] < 0 ? "success" : "FAILED");
+            puts(fd[i] < 0 ? "FAILED" : "success");
         }
 
         if (has_error) {
