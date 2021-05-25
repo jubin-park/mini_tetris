@@ -14,7 +14,7 @@ int main(int argc, char **argv)
     unsigned char data[4];
     unsigned char retval;
     int i;
-    int str_siz;
+    int str_size;
 
     memset(data, 0, sizeof(data));
     
