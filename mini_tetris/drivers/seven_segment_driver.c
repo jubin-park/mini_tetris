@@ -8,19 +8,19 @@ static int __init seven_segment_init(void)
     int chdev;
     printk(KERN_ALERT "seven_segment_init!\n");
 
-    chdev = register_chrdev(LED_MAJOR, LED_NAME, &seven_segment_fops);
+    chdev = register_chrdev(SEVEN_SEGMENT_MAJOR, SEVEN_SEGMENT_NAME, &seven_segment_fops);
     if (0 > chdev) {
         printk(KERN_ALERT "The major number (%d) is busy\n", chdev);
         return 1;
     }
 
-    s_seven_segment_addr = (unsigned char*)ioremap(LED_ADDRESS, MAPPING_BYTE_LENGTH);
+    s_seven_segment_addr = (unsigned char*)ioremap(SEVEN_SEGMENT_ADDRESS, MAPPING_BYTE_LENGTH);
     return 0;
 }
 
 static void __exit seven_segment_exit(void)
 {
-    unregister_chrdev(LED_MAJOR, LED_NAME);
+    unregister_chrdev(SEVEN_SEGMENT_MAJOR, SEVEN_SEGMENT_NAME);
     iounmap(s_seven_segment_addr);
 
     printk(KERN_ALERT "seven_segment_exit!\n");
