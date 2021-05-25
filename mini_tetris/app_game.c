@@ -1,69 +1,72 @@
-#include <stdio.h>
 #include <fcntl.h>
-#include <unistd.h>
+#include <stdio.h>
+#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/ioctl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <signal.h>
+#include <unistd.h>
+#include <assert.h>
 
-typedef union {
-    unsigned char val;
-    struct {
-        unsigned char b8 : 1;
-        unsigned char b7 : 1;
-        unsigned char b6 : 1;
-        unsigned char b5 : 1;
-        unsigned char b4 : 1;
-        unsigned char b3 : 1;
-        unsigned char b2 : 1;
-        unsigned char b1 : 1;
-    } bits;
-} bitflags_t;
+typedef enum {
+    DRIVER_LED,
+    DRIVER_SEVEN_SEGMENT,
+    DRIVER_DOT_MATRIX,
+    DRIVER_LCD_TEXT,
+    DRIVER_BUZZER,
+    DRIVER_PUSH_SWITCH,
+    DRIVER_SIZE
+} driver_t;
 
-static void print_bitflags(const bitflags_t* b);
+const char* DRIVER_NAMES[DRIVER_SIZE] = {
+    "/dev/csemad_led",
+    "/dev/csemad_seven_segment",
+    "/dev/csemad_dot_matrix",
+    "/dev/csemad_lcd_text",
+    "/dev/csemad_buzzer",
+    "/dev/csemad_push_switch"
+};
 
 int main(int argc, char* argv[])
 {
-    int fd;
+    int fd[DRIVER_SIZE] = { -1, -1, -1, -1, -1, -1 };
 
-    bitflags_t set_led_bits = {0};
-    bitflags_t get_led_bits = {0};
-
-    if (2 != argc) {
-        fprintf(stderr, "Usage: ./led_test <range of 1-255>\n");
-        return -1;
-    }
-
+    fd[DRIVER_LED] = open(DRIVER_NAMES[DRIVER_LED], O_RDWR);
+    //fd[DRIVER_SEVEN_SEGMENT] = open(DRIVER_NAMES[DRIVER_SEVEN_SEGMENT], O_RDWR);
+    fd[DRIVER_DOT_MATRIX] = open(DRIVER_NAMES[DRIVER_DOT_MATRIX], O_RDWR);
+    //fd[DRIVER_LCD_TEXT] = open(DRIVER_NAMES[DRIVER_LCD_TEXT], O_RDWR);
+    //fd[DRIVER_BUZZER] = open(DRIVER_NAMES[DRIVER_BUZZER], O_RDWR);
+    //fd[DRIVER_PUSH_SWITCH] = open(DRIVER_NAMES[DRIVER_PUSH_SWITCH], O_RDWR);
+    
     {
-        const char* p = argv[1];
-        while (*p != '\0') {
-            set_led_bits.val *= 10;
-            set_led_bits.val += *p - '0';
-            ++p;
+        size_t i;
+        bool has_error = false;
+
+        for (i = 0; i < DRIVER_SIZE; ++i) {
+            has_error |= fd[i] < 0;
+            if (fd[i] < 0) {
+                fprintf(stderr, "Failed to open driver: '%s'\n", DRIVER_NAMES[i])
+            } else {
+                printf("Succeed to open driver: '%s'\n", DRIVER_NAMES[i])
+            }
+        }
+
+        if (has_error) {
+            goto lb_exit;
         }
     }
 
-    fd = open("/dev/csemad_led", O_RDWR);
 
-    if (fd < 0) {
-        printf("failed to open driver 'csemad_led'\n");
+lb_exit:
+    {
+        size_t i;
 
-        return -1;			
+        for (i = 0; i < DRIVER_SIZE; ++i) {
+            close(fd[i]);
+        }
     }
-
-    printf("Start to loading LED Driver ...\n");
-
-    printf("Set to LED Value: %d\n", set_led_bits.val);
-    write(fd, &set_led_bits.val, 1);
-
-    read(fd, &get_led_bits.val, 1);
-    printf("Current LED Value : %d\n", get_led_bits.val);
-    print_bitflags(&get_led_bits);
-
-    close(fd);
-
     return 0;
 }
 
