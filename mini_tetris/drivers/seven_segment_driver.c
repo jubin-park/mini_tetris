@@ -9,7 +9,7 @@ static int __init seven_segment_init(void)
     printk(KERN_ALERT "seven_segment_init!\n");
 
     chdev = register_chrdev(LED_MAJOR, LED_NAME, &seven_segment_fops);
-    if (0 != chdev) {
+    if (0 > chdev) {
         printk(KERN_ALERT "The major number (%d) is busy\n", chdev);
         return 1;
     }
@@ -79,8 +79,8 @@ static ssize_t seven_segment_write(struct file* inode, const char* gdata, size_t
         return -EFAULT;
     }
 
-    value_short = value[0] << 12 | value[1] << 8 |value[2] << 4 |value[3];
-    outw(value_short,(unsigned int)s_seven_segment_addr);
+    value_short = value[0] << 12 | value[1] << 8 | value[2] << 4 | value[3];
+    outw(value_short, (unsigned int)s_seven_segment_addr);
 
     return length;
 }
