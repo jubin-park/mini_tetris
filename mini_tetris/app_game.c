@@ -76,7 +76,16 @@ int main(int argc, char* argv[])
         unsigned char display_buffer[ROW_COUNT];
         memcpy(display_buffer, old_buffer, ROW_COUNT * sizeof(unsigned char));
 
-        // TODO: block
+        // TODO: draw block
+        unsigned char line[3] = {
+            (block1[ANGLE_0][0][0] << 2) | (block1[ANGLE_0][0][1] << 1) | block1[ANGLE_0][0][2],
+            (block1[ANGLE_0][1][0] << 2) | (block1[ANGLE_0][1][1] << 1) | block1[ANGLE_0][1][2],
+            (block1[ANGLE_0][2][0] << 2) | (block1[ANGLE_0][2][1] << 1) | block1[ANGLE_0][2][2];
+        }
+
+        for (int r = 0; r < 3; ++r) {
+            display_buffer[now_block.y + r][now_block.x] |= line[r] << (6 - now_block.x);
+        }
 
         // draw display_buffer
         if (write(fd[DRIVER_DOT_MATRIX], display_buffer, ROW_COUNT * sizeof(unsigned char)) < 0) {
