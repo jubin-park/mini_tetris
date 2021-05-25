@@ -69,12 +69,3 @@ lb_exit:
     }
     return 0;
 }
-
-static void print_bitflags(const bitflags_t* b)
-{
-    printf("D1|D2|D3|D4\n");
-    printf("%2d|%2d|%2d|%2d\n", b->bits.b1, b->bits.b2, b->bits.b3, b->bits.b4);
-    puts("------------");
-    printf("D5|D6|D7|D8\n");
-    printf("%2d|%2d|%2d|%2d\n\n", b->bits.b5, b->bits.b6, b->bits.b7, b->bits.b8);
-}
