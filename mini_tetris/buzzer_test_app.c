@@ -8,7 +8,7 @@
 #include <sys/ioctl.h>
 #include <signal.h>
 
-#define BUZZER_DEVICE "/dev/buzzer"
+#define BUZZER_DEVICE "/dev/csemad_buzzer"
 
 unsigned char quit = 0;
 
