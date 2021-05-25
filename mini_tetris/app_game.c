@@ -63,25 +63,30 @@ int main(int argc, char* argv[])
 
     (void)signal(SIGINT, signal_exit);
 
+    block_t now_block = {
+        .x = 3,
+        .y = 0,
+        .angle = ANGLE_0
+    };
     uint32_t game_frame = 0;
-
     unsigned char old_buffer[ROW_COUNT] = { 0b01100001, 0b0111101 };
+
     while (g_is_game_running)
     {
         unsigned char display_buffer[ROW_COUNT];
         memcpy(display_buffer, old_buffer, ROW_COUNT * sizeof(unsigned char));
 
+        // TODO: block
+
+        // draw display_buffer
         if (write(fd[DRIVER_DOT_MATRIX], display_buffer, ROW_COUNT * sizeof(unsigned char)) < 0) {
             fprintf(stderr, "write() error\n");
             
             goto lb_exit;
         }
-        
-        printf("frame = %4d\n", game_frame);
-
+    
         usleep(1000000);
-
-        game_frame++;
+        printf("frame = %4d\n", ++game_frame);
     }
 
 lb_exit:
