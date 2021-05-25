@@ -9,8 +9,8 @@
 #include <signal.h>
 #include <unistd.h>
 #include <assert.h>
-#include <blocks.h>
 
+#include "blocks.h"
 #include "dot10x7/font.h"
 #include "dot10x7/full.h"
 
