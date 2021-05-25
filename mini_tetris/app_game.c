@@ -9,6 +9,7 @@
 #include <signal.h>
 #include <unistd.h>
 #include <assert.h>
+#include <blocks.h>
 
 typedef enum {
     DRIVER_LED,
