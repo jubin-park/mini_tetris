@@ -1,7 +1,7 @@
 DRIVER_DIR = drivers
 PWD = $(shell pwd)
 
-obj-m = $(DRIVER_DIR)/dot_matrix_driver.o $(DRIVER_DIR)/led_driver.o # $(DRIVER_DIR)/buzzer_driver.o $(DRIVER_DIR)/lcd_text_driver.o $(DRIVER_DIR)/push_switch_driver.o $(DRIVER_DIR)/seven_segment_driver.o
+obj-m = $(DRIVER_DIR)/dot_matrix_driver.o $(DRIVER_DIR)/led_driver.o $(DRIVER_DIR)/buzzer_driver.o #$(DRIVER_DIR)/lcd_text_driver.o $(DRIVER_DIR)/push_switch_driver.o $(DRIVER_DIR)/seven_segment_driver.o
 
 all: driver app
 
