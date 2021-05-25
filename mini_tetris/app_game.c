@@ -63,7 +63,7 @@ int main(int argc, char* argv[])
 
     (void)signal(SIGINT, signal_exit);
 
-    block_t now_block = {
+    block_status_t now_block = {
         .x = 3,
         .y = 0,
         .angle = ANGLE_0
