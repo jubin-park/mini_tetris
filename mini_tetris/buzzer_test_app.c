@@ -65,6 +65,9 @@ int main(int argc, char **argv)
         sleep(1);
     }
     
+    data = 0;
+    retval = write(dev, &data, 1);
+
     printf("Current Buzzer Value : %d\n",data);
     
     close(dev);
