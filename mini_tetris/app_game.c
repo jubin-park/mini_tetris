@@ -36,6 +36,7 @@ const char* DRIVER_NAMES[DRIVER_SIZE] = {
 bool g_is_game_running = true;
 
 void signal_exit(int sig);
+void display_matrix(const int fd);
 
 int main(int argc, char* argv[])
 {
@@ -83,9 +84,9 @@ int main(int argc, char* argv[])
             (block1[ANGLE_0][2][0] << 2) | (block1[ANGLE_0][2][1] << 1) | block1[ANGLE_0][2][2]
         };
 
-        for (int r = 0; r < 3; ++r) {
-            display_buffer[now_block.y + r] |= line[r] << (6 - now_block.x);
-        }
+        display_buffer[now_block.y + 0] |= line[0] << (6 - now_block.x);
+        display_buffer[now_block.y + 1] |= line[1] << (6 - now_block.x);
+        display_buffer[now_block.y + 2] |= line[2] << (6 - now_block.x);
 
         // draw display_buffer
         if (write(fd[DRIVER_DOT_MATRIX], display_buffer, ROW_COUNT * sizeof(unsigned char)) < 0) {
@@ -98,7 +99,9 @@ int main(int argc, char* argv[])
         now_block.y %= 10;
 
         printf("frame = %4d\n", ++game_frame);
-
+        display_buffer(fd[DRIVER_DOT_MATRIX]);
+        puts("");
+        
         usleep(1000000);
     }
 
@@ -117,4 +120,23 @@ void signal_exit(int sig)
 {
     printf("<Exit Game>\tsig: %d\n", sig);
     g_is_game_running = false;
+}
+
+void display_matrix(const int fd)
+{
+    unsigned char read_buf[ROW_COUNT];
+
+    read(fd, read_buf, sizeof(read_buf));
+
+    for (int i = 0; i < ROW_COUNT; ++i) {
+        for (int b = 6; b >= 0; --b) {
+            if ((1 << b) & read_buf[i]) {
+                putchar('*');
+            }
+            else {
+                putchar('.');
+            }
+        }
+        putchar('\n');
+    }
 }
