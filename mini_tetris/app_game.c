@@ -76,6 +76,10 @@ int main(int argc, char* argv[])
         unsigned char display_buffer[ROW_COUNT];
         memcpy(display_buffer, old_buffer, ROW_COUNT * sizeof(unsigned char));
 
+        
+
+
+
         // TODO: draw block
         unsigned char line[3] = {
             (block1[ANGLE_0][0][0] << 2) | (block1[ANGLE_0][0][1] << 1) | block1[ANGLE_0][0][2],
@@ -94,8 +98,12 @@ int main(int argc, char* argv[])
             goto lb_exit;
         }
     
-        usleep(1000000);
+        now_block.y++;
+        now_block.y %= 10;
+
         printf("frame = %4d\n", ++game_frame);
+
+        usleep(1000000);
     }
 
 lb_exit:
