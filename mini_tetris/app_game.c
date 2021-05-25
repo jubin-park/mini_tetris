@@ -84,7 +84,7 @@ int main(int argc, char* argv[])
         };
 
         for (int r = 0; r < 3; ++r) {
-            display_buffer[now_block.y + r][now_block.x] |= line[r] << (6 - now_block.x);
+            display_buffer[now_block.y + r] |= line[r] << (6 - now_block.x);
         }
 
         // draw display_buffer
