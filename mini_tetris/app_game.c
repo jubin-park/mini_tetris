@@ -47,10 +47,10 @@ int main(int argc, char* argv[])
         for (i = 0; i < DRIVER_SIZE; ++i) {
             has_error |= fd[i] < 0;
             if (fd[i] < 0) {
-                fprintf(stderr, "Failed to open driver: '%s'\n", DRIVER_NAMES[i]);
+                fprintf(stderr, "Loading driver: '%s' ... FAILED\n", DRIVER_NAMES[i]);
             }
             else {
-                printf("Succeed to open driver: '%s'\n", DRIVER_NAMES[i]);
+                printf("Loading driver: '%s' ... SUCCESS\n", DRIVER_NAMES[i]);
             }
         }
 
