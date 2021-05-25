@@ -6,7 +6,7 @@
 #include <fcntl.h>
 #include <string.h>
 #define MAX_DIGIT 4
-#define FND_DEVICE "/dev/csemad_fnd"
+#define FND_DEVICE "/dev/csemad_seven_segment"
 
 int main(int argc, char **argv)
 {
