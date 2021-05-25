@@ -35,7 +35,7 @@ const char* DRIVER_NAMES[DRIVER_SIZE] = {
 
 bool g_is_game_running = true;
 
-void signal_exit(void);
+void signal_exit(int sig);
 
 int main(int argc, char* argv[])
 {
@@ -64,7 +64,7 @@ int main(int argc, char* argv[])
     (void)signal(SIGINT, signal_exit);
 
     unsigned char old_buffer[ROW_COUNT] = { 0b01100001, 0b0111101 };
-    while (!g_is_game_running)
+    while (g_is_game_running)
     {
         unsigned char display_buffer[ROW_COUNT];
         memcpy(display_buffer, old_buffer, ROW_COUNT * sizeof(unsigned char));
@@ -89,8 +89,8 @@ lb_exit:
     return 0;
 }
 
-void signal_exit(void)
+void signal_exit(int sig)
 {
-    puts("<Exit Game>");
+    printf("<Exit Game>\tsig: %d\n", sig);
     g_is_game_running = false;
 }
