@@ -99,9 +99,9 @@ int main(int argc, char* argv[])
         now_block.y %= 10;
 
         printf("frame = %4d\n", ++game_frame);
-        display_buffer(fd[DRIVER_DOT_MATRIX]);
+        display_matrix(fd[DRIVER_DOT_MATRIX]);
         puts("");
-        
+
         usleep(1000000);
     }
 
