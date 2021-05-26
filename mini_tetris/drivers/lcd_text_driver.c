@@ -8,19 +8,19 @@ static int __init lcd_text_init(void)
     int chdev;
     printk(KERN_ALERT "lcd_text_init!\n");
 
-    chdev = register_chrdev(LED_TEXT_MAJOR, LED_TEXT_NAME, &lcd_text_fops);
+    chdev = register_chrdev(LCD_TEXT_MAJOR, LCD_TEXT_NAME, &lcd_text_fops);
     if (0 != chdev) {
         printk(KERN_ALERT "The major number (%d) is busy\n", chdev);
         return 1;
     }
 
-    s_lcd_text_addr = (unsigned char*)ioremap(LED_ADDRESS, MAPPING_BYTE_LENGTH);
+    s_lcd_text_addr = (unsigned char*)ioremap(LCD_TEXT_ADDRESS, MAPPING_BYTE_LENGTH);
     return 0;
 }
 
 static void __exit lcd_text_exit(void)
 {
-    unregister_chrdev(LED_TEXT_MAJOR, LED_TEXT_NAME);
+    unregister_chrdev(LCD_TEXT_MAJOR, LCD_TEXT_NAME);
     iounmap(s_lcd_text_addr);
 
     printk(KERN_ALERT "lcd_text_exit!\n");
