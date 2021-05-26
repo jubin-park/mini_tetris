@@ -9,6 +9,7 @@ static int __init lcd_text_init(void)
     printk(KERN_ALERT "lcd_text_init!\n");
 
     chdev = register_chrdev(LCD_TEXT_MAJOR, LCD_TEXT_NAME, &lcd_text_fops);
+    
     if (0 != chdev) {
         printk(KERN_ALERT "The major number (%d) is busy\n", chdev);
         return 1;
@@ -76,10 +77,10 @@ static ssize_t lcd_text_write(struct file* inode, const char* gdata, size_t leng
     
     value[length] = 0;
     
-    for(i = 0; i < length; i++)
+    for (i = 0; i < length; i++)
     {
         _s_value = (value[i] & 0xFF) << 8 | value[i + 1] & 0xFF;
-        outw(_s_value,(unsigned int)iom_fpga_text_lcd_addr+i);
+        outw(_s_value, (unsigned int)s_lcd_text_addr + i);
         i++;
     }
 
