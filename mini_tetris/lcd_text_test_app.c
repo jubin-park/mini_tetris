@@ -32,11 +32,11 @@ int main(int argc, char **argv)
         return -1;
     }
     
-    dev = open(FPGA_TEXT_LCD_DEVICE, O_WRONLY);
+    dev = open(LCD_DEVICE, O_WRONLY);
     
     if (dev < 0) 
     {
-        printf("Device open error : %s\n", FPGA_TEXT_LCD_DEVICE);
+        printf("Device open error : %s\n", LCD_DEVICE);
         return -1;
     }
     
@@ -49,6 +49,7 @@ int main(int argc, char **argv)
     }
     
     str_size = strlen(argv[2]);
+
     if (str_size > 0) 
     {
         strncat(string, argv[2], str_size);
