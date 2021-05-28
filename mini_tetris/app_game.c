@@ -1,3 +1,5 @@
+#define _POSIX_C_SOURCE (199309L)
+
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdbool.h>
@@ -9,6 +11,7 @@
 #include <signal.h>
 #include <unistd.h>
 #include <assert.h>
+#include <time.h>
 
 #include "blocks.h"
 #include "driver.h"
@@ -55,6 +58,10 @@ int main(int argc, char* argv[])
     unsigned char old_buffer[ROW_COUNT] = { 0 };
     unsigned char switch_states[SWITCH_KEY_SIZE] = { 0 };
 
+    struct timespec ts_sleep;
+    ts_sleep.tv_sec = 0;
+    ts_sleep.tv_nsec = 1000000L;
+
     while (g_is_game_running)
     {
         {// get switch key state
@@ -98,7 +105,7 @@ int main(int argc, char* argv[])
         display_matrix(fd[DRIVER_DOT_MATRIX]);
         puts("");
 
-        usleep(1000000);
+        nanosleep(&ts_sleep, NULL);
     }
 
 lb_exit:
