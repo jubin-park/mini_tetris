@@ -19,14 +19,14 @@ typedef enum {
 
 typedef struct {
     struct {
-        unsigned char x : 4;
-        unsigned char y : 4;
+        uint8_t x : 4;
+        uint8_t y : 4;
     } pos;
     angle_t angle;
-    unsigned char* tile_of_zero_angle;
+    uint8_t* tile_of_zero_angle;
 } block_t;
 
-extern const uint8_t BLOCK_TILES[BLOCK_COUNT * BLOCK_HEIGHT * ANGLE_SIZE][BLOCK_WIDTH] =
+const uint8_t BLOCK_TILES[BLOCK_COUNT * BLOCK_HEIGHT * ANGLE_SIZE][BLOCK_WIDTH] =
 {
 /* block 0 */
     {1, 1, 1},

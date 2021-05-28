@@ -50,8 +50,7 @@ int main(int argc, char* argv[])
     (void)signal(SIGINT, signal_exit);
 
     block_t now_block = {
-        .pos.x = 3,
-        .pos.y = 0,
+        .pos = { 3, 0 },
         .angle = random() % ANGLE_SIZE,
         .tile_of_zero_angle = BLOCK_TILES + (random() % BLOCK_COUNT) * BLOCK_HEIGHT * ANGLE_SIZE;
     };
@@ -85,9 +84,9 @@ int main(int argc, char* argv[])
             const uint8_t* random_block = now_block.tile_of_zero_angle + now_block.angle * BLOCK_HEIGHT;
 
             // draw block on display_buffer
-            display_buffer[now_block.pos.y + 0] |= (random_block[0][0] << 2 | random_block[0][1] << 1 | random_block[0][2]) << (6 - now_block.x);
-            display_buffer[now_block.pos.y + 1] |= (random_block[1][0] << 2 | random_block[1][1] << 1 | random_block[1][2]) << (6 - now_block.x);
-            display_buffer[now_block.pos.y + 2] |= (random_block[2][0] << 2 | random_block[2][1] << 1 | random_block[2][2]) << (6 - now_block.x);
+            display_buffer[now_block.pos.y + 0] |= ((random_block + 0)[0] << 2 | (random_block + 0)[1] << 1 | (random_block + 0)[2]) << (6 - now_block.pos.x);
+            display_buffer[now_block.pos.y + 1] |= ((random_block + 1)[0] << 2 | (random_block + 1)[1] << 1 | (random_block + 1)[2]) << (6 - now_block.pos.x);
+            display_buffer[now_block.pos.y + 2] |= ((random_block + 2)[0] << 2 | (random_block + 2)[1] << 1 | (random_block + 2)[2]) << (6 - now_block.pos.x);
 
             // real drawing
             if (write(fd[DRIVER_DOT_MATRIX], display_buffer, ROW_COUNT * sizeof(unsigned char)) < 0) {
