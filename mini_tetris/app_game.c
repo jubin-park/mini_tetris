@@ -49,11 +49,13 @@ int main(int argc, char* argv[])
 
     (void)signal(SIGINT, signal_exit);
 
-    block_status_t now_block = {
-        .x = 3,
-        .y = 0,
-        .angle = ANGLE_0
+    block_t now_block = {
+        .pos.x = 3,
+        .pos.y = 0,
+        .angle = random() % ANGLE_SIZE,
+        .tile_of_zero_angle = BLOCK_TILES + (random() % BLOCK_COUNT) * BLOCK_HEIGHT * ANGLE_SIZE;
     };
+    
     uint32_t game_frame = 0;
     unsigned char old_buffer[ROW_COUNT] = { 0 };
     unsigned char switch_states[SWITCH_KEY_SIZE] = { 0 };
@@ -62,12 +64,15 @@ int main(int argc, char* argv[])
     ts_sleep.tv_sec = 1;
     ts_sleep.tv_nsec = 0L;
 
+    srandom((unsigned int)time(NULL));
+
     while (g_is_game_running)
     {
         {// get switch key state
             size_t i;
             
             read(fd[DRIVER_PUSH_SWITCH], switch_states, sizeof(switch_states));
+
             for (i = 0; i < 3; ++i) {
                 printf("%3d %3d %3d\n", switch_states[i * 3], switch_states[i * 3 + 1], switch_states[i * 3 + 2]);
             }
@@ -77,18 +82,12 @@ int main(int argc, char* argv[])
             unsigned char display_buffer[ROW_COUNT];
             memcpy(display_buffer, old_buffer, ROW_COUNT * sizeof(unsigned char));
 
-            // get block lines
-            unsigned char line[3] = {
-                (block1[ANGLE_0][0][0] << 2) | (block1[ANGLE_0][0][1] << 1) | block1[ANGLE_0][0][2],
-                (block1[ANGLE_0][1][0] << 2) | (block1[ANGLE_0][1][1] << 1) | block1[ANGLE_0][1][2],
-                (block1[ANGLE_0][2][0] << 2) | (block1[ANGLE_0][2][1] << 1) | block1[ANGLE_0][2][2]
-            };
-            // draw block on display_buffer
-            display_buffer[now_block.y + 0] |= line[0] << (6 - now_block.x);
-            display_buffer[now_block.y + 1] |= line[1] << (6 - now_block.x);
-            display_buffer[now_block.y + 2] |= line[2] << (6 - now_block.x);
+            const uint8_t* random_block = now_block.tile_of_zero_angle + now_block.angle * BLOCK_HEIGHT;
 
-            display_buffer[6] = 0x1;
+            // draw block on display_buffer
+            display_buffer[now_block.pos.y + 0] |= (random_block[0][0] << 2 | random_block[0][1] << 1 | random_block[0][2]) << (6 - now_block.x);
+            display_buffer[now_block.pos.y + 1] |= (random_block[1][0] << 2 | random_block[1][1] << 1 | random_block[1][2]) << (6 - now_block.x);
+            display_buffer[now_block.pos.y + 2] |= (random_block[2][0] << 2 | random_block[2][1] << 1 | random_block[2][2]) << (6 - now_block.x);
 
             // real drawing
             if (write(fd[DRIVER_DOT_MATRIX], display_buffer, ROW_COUNT * sizeof(unsigned char)) < 0) {
@@ -97,8 +96,8 @@ int main(int argc, char* argv[])
                 goto lb_exit;
             }
 
-            now_block.y++;
-            now_block.y %= ROW_COUNT;
+            now_block.pos.y++;
+            now_block.pos.y %= ROW_COUNT;
         }
 
         printf("frame = %4d\n", ++game_frame);
@@ -142,4 +141,9 @@ void display_matrix(const int fd)
         }
         putchar('\n');
     }
+}
+
+bool is_collision_occured(const unsigned char* display_buffer, const block_t* block)
+{
+    return false;
 }
