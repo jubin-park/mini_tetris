@@ -23,7 +23,7 @@ typedef struct {
         uint8_t y : 4;
     } pos;
     angle_t angle;
-    uint8_t* tile_of_zero_angle;
+    const uint8_t* tile_of_zero_angle;
 } block_t;
 
 const uint8_t BLOCK_TILES[BLOCK_COUNT * BLOCK_HEIGHT * ANGLE_SIZE][BLOCK_WIDTH] =

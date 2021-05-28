@@ -50,7 +50,7 @@ int main(int argc, char* argv[])
     block_t now_block = {
         .pos = { 3, 0 },
         .angle = random() % ANGLE_SIZE,
-        .tile_of_zero_angle = BLOCK_TILES[(random() % BLOCK_COUNT) * BLOCK_HEIGHT * ANGLE_SIZE];
+        .tile_of_zero_angle = BLOCK_TILES[(random() % BLOCK_COUNT) * BLOCK_HEIGHT * ANGLE_SIZE]
     };
     
     uint32_t game_frame = 0;
