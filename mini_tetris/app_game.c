@@ -13,7 +13,7 @@
 #include <assert.h>
 #include <time.h>
 
-#include "blocks.h"
+#include "block.h"
 #include "driver.h"
 #include "switch_key.h"
 #include "dot10x7/font.h"

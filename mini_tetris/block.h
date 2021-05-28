@@ -1,5 +1,5 @@
-#ifndef BLOCKS_H
-#define BLCOKS_H
+#ifndef BLOCK_H
+#define BLOCK_H
 
 #include <stdint.h>
 
@@ -113,4 +113,4 @@ static const uint8_t block4[4][3][3] =
     }
 };
 
-#endif /* BLOCKS_H */
+#endif /* BLOCK_H */
