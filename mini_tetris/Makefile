@@ -9,7 +9,7 @@ driver:
 	$(MAKE) -C $(KDIR) SUBDIRS=$(PWD) modules
 
 app:
-	gcc -std=gnu99 -W -Wall -pedantic -static -o app_game app_game.c
+	gcc -std=gnu99 -W -Wall -static -o app_game app_game.c
 
 clean:
 	rm -rf *.ko *.mod.* *.o app_game Module.symvers modules.order .led* .tmp* 
