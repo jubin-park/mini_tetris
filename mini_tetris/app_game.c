@@ -59,8 +59,8 @@ int main(int argc, char* argv[])
     unsigned char switch_states[SWITCH_KEY_SIZE] = { 0 };
 
     struct timespec ts_sleep;
-    ts_sleep.tv_sec = 0;
-    ts_sleep.tv_nsec = 1000000000L;
+    ts_sleep.tv_sec = 1;
+    ts_sleep.tv_nsec = 0L;
 
     while (g_is_game_running)
     {
