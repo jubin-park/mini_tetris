@@ -60,7 +60,7 @@ int main(int argc, char* argv[])
 
     struct timespec ts_sleep;
     ts_sleep.tv_sec = 0;
-    ts_sleep.tv_nsec = 1000000L;
+    ts_sleep.tv_nsec = 1000000000L;
 
     while (g_is_game_running)
     {
