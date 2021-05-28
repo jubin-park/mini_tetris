@@ -17,12 +17,18 @@
 #include "dot10x7/font.h"
 #include "dot10x7/full.h"
 
+enum {
+    SCREEN_WIDTH = 7,
+    SCREEN_HEIGHT = 10,
+};
+
 bool g_is_game_running = true;
 
 void signal_exit(int sig);
 void display_matrix(const int fd);
+bool is_collision_occured(const uint8_t* screen_buffer, const block_t* block);
 
-int main(int argc, char* argv[])
+int main()
 {
     int fd[DRIVER_SIZE] = { -1, -1, -1, -1, -1, -1 };
     {
@@ -50,14 +56,15 @@ int main(int argc, char* argv[])
     srandom((unsigned int)time(NULL));
 
     block_t now_block = {
-        .pos = { 3, 0 },
+        .x = 0,
+        .y = -3,
         .angle = random() % ANGLE_SIZE,
         .tile_of_zero_angle = BLOCK_TILES[(random() % BLOCK_COUNT) * BLOCK_HEIGHT * ANGLE_SIZE]
     };
     
     uint32_t game_frame = 0;
-    unsigned char old_buffer[ROW_COUNT] = { 0 };
-    unsigned char switch_states[SWITCH_KEY_SIZE] = { 0 };
+    uint8_t old_screen_buffer[SCREEN_HEIGHT] = { 0 };
+    uint8_t switch_states[SWITCH_KEY_SIZE] = { 0 };
 
     struct timespec ts_sleep;
     ts_sleep.tv_sec = 1;
@@ -75,26 +82,39 @@ int main(int argc, char* argv[])
             }
         }
 
-        {// draw display_buffer
-            unsigned char display_buffer[ROW_COUNT];
-            memcpy(display_buffer, old_buffer, ROW_COUNT * sizeof(unsigned char));
+        {// draw new_screen_buffer
+            uint8_t new_screen_buffer[SCREEN_HEIGHT];
+            memcpy(new_screen_buffer, old_screen_buffer, SCREEN_HEIGHT * sizeof(uint8_t));
 
-            const uint8_t* random_block = now_block.tile_of_zero_angle + (now_block.angle * BLOCK_WIDTH * BLOCK_HEIGHT);
+            const uint8_t* p_block_tiles = now_block.tile_of_zero_angle + (now_block.angle * BLOCK_WIDTH * BLOCK_HEIGHT);
 
-            // draw block on display_buffer
-            display_buffer[now_block.pos.y + 0] |= ((random_block + 0)[0] << 2 | (random_block + 0)[1] << 1 | (random_block + 0)[2]) << (6 - now_block.pos.x);
-            display_buffer[now_block.pos.y + 1] |= ((random_block + 3)[0] << 2 | (random_block + 3)[1] << 1 | (random_block + 3)[2]) << (6 - now_block.pos.x);
-            display_buffer[now_block.pos.y + 2] |= ((random_block + 6)[0] << 2 | (random_block + 6)[1] << 1 | (random_block + 6)[2]) << (6 - now_block.pos.x);
+            // draw block on new_screen_buffer
+            for (int i = 0; i < BLOCK_HEIGHT; ++i) {
+                if (now_block.y + i >= 0 && now_block.y + i < SCREEN_HEIGHT) {
+                    new_screen_buffer[now_block.y + i] |= ((p_block_tiles + i * BLOCK_WIDTH)[0] << 2 | (p_block_tiles + i * BLOCK_WIDTH)[1] << 1 | (p_block_tiles + i * BLOCK_WIDTH)[2]) << now_block.x;    
+                }
+            }
 
             // real drawing
-            if (write(fd[DRIVER_DOT_MATRIX], display_buffer, ROW_COUNT * sizeof(unsigned char)) < 0) {
+            if (write(fd[DRIVER_DOT_MATRIX], new_screen_buffer, SCREEN_HEIGHT * sizeof(uint8_t)) < 0) {
                 fprintf(stderr, "write() error\n");
                 
                 goto lb_exit;
             }
 
-            now_block.pos.y++;
-            now_block.pos.y %= ROW_COUNT;
+            if (is_collision_occured(new_screen_buffer, &now_block)) {
+                printf("collision occured\n");
+
+                memcpy(old_screen_buffer, new_screen_buffer, SCREEN_HEIGHT * sizeof(uint8_t));
+
+                now_block.x = 0;
+                now_block.y = -3;
+                now_block.angle = random() % ANGLE_SIZE;
+                now_block.tile_of_zero_angle = BLOCK_TILES[(random() % BLOCK_COUNT) * BLOCK_HEIGHT * ANGLE_SIZE];
+            }
+            else {
+                now_block.y++;
+            }
         }
 
         printf("frame = %4d\n", ++game_frame);
@@ -123,12 +143,12 @@ void signal_exit(int sig)
 
 void display_matrix(const int fd)
 {
-    unsigned char read_buf[ROW_COUNT];
+    uint8_t read_buf[SCREEN_HEIGHT];
 
     read(fd, read_buf, sizeof(read_buf));
 
-    for (int i = 0; i < ROW_COUNT; ++i) {
-        for (int b = 6; b >= 0; --b) {
+    for (int i = 0; i < SCREEN_HEIGHT; ++i) {
+        for (int b = 0; b < SCREEN_WIDTH; ++b) {
             if ((1 << b) & read_buf[i]) {
                 putchar('*');
             }
@@ -140,7 +160,27 @@ void display_matrix(const int fd)
     }
 }
 
-bool is_collision_occured(const unsigned char* display_buffer, const block_t* block)
+bool is_collision_occured(const uint8_t* screen_buffer, const block_t* block)
 {
+    const uint8_t* const p_block_tiles = block->tile_of_zero_angle + (block->angle * BLOCK_WIDTH * BLOCK_HEIGHT);
+
+    for (int8_t x = 0; x < BLOCK_WIDTH && block->x + x < SCREEN_WIDTH; ++x) {
+        int8_t bottom_y = -1;
+        for (int8_t y = BLOCK_HEIGHT - 1; y >= 0; --y) {
+            if (1 == (p_block_tiles + y * BLOCK_WIDTH)[x]) {
+                bottom_y = y;
+                break;                
+            }
+        }
+
+        if (bottom_y >= 0) {
+            const int8_t real_x = block->x + x;
+            const int8_t real_y = block->y + bottom_y;
+            if (real_y >= SCREEN_HEIGHT - 1 || (screen_buffer[real_y + 1] & (1 << real_x))) {
+                return true;
+            }
+        }
+    }
+
     return false;
 }

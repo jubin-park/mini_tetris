@@ -18,10 +18,8 @@ typedef enum {
 } angle_t;
 
 typedef struct {
-    struct {
-        uint8_t x : 4;
-        uint8_t y : 4;
-    } pos;
+    int8_t x;
+    int8_t y;
     angle_t angle;
     const uint8_t* tile_of_zero_angle;
 } block_t;
