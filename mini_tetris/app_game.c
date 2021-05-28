@@ -88,7 +88,9 @@ int main(int argc, char* argv[])
             display_buffer[now_block.y + 1] |= line[1] << (6 - now_block.x);
             display_buffer[now_block.y + 2] |= line[2] << (6 - now_block.x);
 
-            display_buffer[6] = 0x7f;
+            display_buffer[5] = 0x7f;
+            display_buffer[6] = 0xff;
+            display_buffer[7] = 0x7f;
 
             // real drawing
             if (write(fd[DRIVER_DOT_MATRIX], display_buffer, ROW_COUNT * sizeof(unsigned char)) < 0) {
