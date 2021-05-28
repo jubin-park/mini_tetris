@@ -47,6 +47,8 @@ int main(int argc, char* argv[])
 
     (void)signal(SIGINT, signal_exit);
 
+    srandom((unsigned int)time(NULL));
+
     block_t now_block = {
         .pos = { 3, 0 },
         .angle = random() % ANGLE_SIZE,
@@ -60,8 +62,6 @@ int main(int argc, char* argv[])
     struct timespec ts_sleep;
     ts_sleep.tv_sec = 1;
     ts_sleep.tv_nsec = 0L;
-
-    srandom((unsigned int)time(NULL));
 
     while (g_is_game_running)
     {
@@ -79,12 +79,12 @@ int main(int argc, char* argv[])
             unsigned char display_buffer[ROW_COUNT];
             memcpy(display_buffer, old_buffer, ROW_COUNT * sizeof(unsigned char));
 
-            const uint8_t* random_block = now_block.tile_of_zero_angle + now_block.angle * BLOCK_HEIGHT;
+            const uint8_t* random_block = now_block.tile_of_zero_angle + (now_block.angle * BLOCK_WIDTH * BLOCK_HEIGHT);
 
             // draw block on display_buffer
             display_buffer[now_block.pos.y + 0] |= ((random_block + 0)[0] << 2 | (random_block + 0)[1] << 1 | (random_block + 0)[2]) << (6 - now_block.pos.x);
-            display_buffer[now_block.pos.y + 1] |= ((random_block + 1)[0] << 2 | (random_block + 1)[1] << 1 | (random_block + 1)[2]) << (6 - now_block.pos.x);
-            display_buffer[now_block.pos.y + 2] |= ((random_block + 2)[0] << 2 | (random_block + 2)[1] << 1 | (random_block + 2)[2]) << (6 - now_block.pos.x);
+            display_buffer[now_block.pos.y + 1] |= ((random_block + 3)[0] << 2 | (random_block + 3)[1] << 1 | (random_block + 3)[2]) << (6 - now_block.pos.x);
+            display_buffer[now_block.pos.y + 2] |= ((random_block + 6)[0] << 2 | (random_block + 6)[1] << 1 | (random_block + 6)[2]) << (6 - now_block.pos.x);
 
             // real drawing
             if (write(fd[DRIVER_DOT_MATRIX], display_buffer, ROW_COUNT * sizeof(unsigned char)) < 0) {
