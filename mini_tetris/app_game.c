@@ -38,7 +38,9 @@ int main(int argc, char* argv[])
         }
 
         if (has_error) {
-            //goto lb_exit;
+            printf("Try to execute it in sudo mode\n");
+
+            goto lb_exit;
         }
     }
 
@@ -78,6 +80,8 @@ int main(int argc, char* argv[])
             display_buffer[now_block.y + 0] |= line[0] << (6 - now_block.x);
             display_buffer[now_block.y + 1] |= line[1] << (6 - now_block.x);
             display_buffer[now_block.y + 2] |= line[2] << (6 - now_block.x);
+
+            display_buffer[6] = 0x7f;
 
             // real drawing
             if (write(fd[DRIVER_DOT_MATRIX], display_buffer, ROW_COUNT * sizeof(unsigned char)) < 0) {
