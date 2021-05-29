@@ -22,17 +22,19 @@
 enum {
     SCREEN_WIDTH = 7,
     SCREEN_HEIGHT = 10,
-    DEFAULT_SCORE = 10,
+    DEFAULT_SCORE = 1235,
 };
 
 bool g_is_game_running = true;
 uint32_t g_score;
+uint8_t g_score_text[4];
 
 void signal_exit(int sig);
 void display_matrix(const int fd);
 bool is_collision_occured(const uint8_t* screen_buffer, const block_t* block);
 bool is_switch_key_pressed(const switch_key_t key);
 bool is_switch_key_triggered(const switch_key_t key);
+void update_score_text(const int fd, uint32_t original_score);
 
 int main()
 {
@@ -55,6 +57,9 @@ int main()
 
             goto lb_exit;
         }
+
+        memset(g_score_text, 0x0, 4);
+        write(fd[DRIVER_SEVEN_SEGMENT], g_score_text, 4);
     }
 
     (void)signal(SIGINT, signal_exit);
@@ -70,6 +75,7 @@ int main()
     uint32_t frame_count = 0;
     uint8_t old_screen_buffer[SCREEN_HEIGHT] = { 0 };
 old_screen_buffer[SCREEN_HEIGHT - 1] = 0x77;
+old_screen_buffer[SCREEN_HEIGHT - 2] = 0x77;
 
     struct timespec ts_sleep;
     ts_sleep.tv_sec = 0;
@@ -165,6 +171,8 @@ old_screen_buffer[SCREEN_HEIGHT - 1] = 0x77;
                 if (removed_height > 0) {
                     memset(new_screen_buffer, 0x0, removed_height * sizeof(uint8_t));
                     g_score += removed_height * DEFAULT_SCORE;
+
+                    update_score_text(fd[DRIVER_SEVEN_SEGMENT], g_score);
                 }
 
                 memcpy(old_screen_buffer, new_screen_buffer, SCREEN_HEIGHT * sizeof(uint8_t));
@@ -255,4 +263,29 @@ bool is_switch_key_triggered(const switch_key_t key)
         return true;
     }
     return false;
+}
+
+void update_score_text(const int fd, uint32_t original_score)
+{
+    uint32_t score = original_score;
+    memset(g_score_text, 0, sizeof(g_score_text));
+
+    if (score > 9999) {
+        score = 9999;
+    }
+
+    uint8_t* p = g_score_text + sizeof(g_score_text) - 1;
+
+    do {
+        *p = score % 10;
+        score /= 10;
+        --p;
+    } while (score > 0 && p >= g_score_text);
+
+    if (write(fd, g_score_text, sizeof(g_score_text)) < 0) 
+    {
+        fprintf(stderr, "update_score_text Error\n");
+    }
+
+    printf("** score %d%d%d%d\n", g_score_text[0], g_score_text[1], g_score_text[2], g_score_text[3]);
 }
