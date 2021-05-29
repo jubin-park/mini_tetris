@@ -11,8 +11,8 @@
 #include <assert.h>
 #include <time.h>
 
-#include "block.h"
 #include "config.h"
+#include "block.h"
 #include "driver.h"
 #include "switch_key.h"
 #include "dot10x7/font.h"
@@ -24,9 +24,6 @@ uint8_t g_score_text[4];
 
 void signal_exit(int sig);
 void display_matrix(const uint8_t* screen_buffer);
-bool is_collision_occured(const uint8_t* screen_buffer, const block_t* block);
-bool is_switch_key_pressed(const switch_key_t key);
-bool is_switch_key_triggered(const switch_key_t key);
 void update_score_text(const int fd, const uint32_t original_score);
 
 int main()
@@ -209,47 +206,6 @@ void display_matrix(const uint8_t* screen_buffer)
         }
         putchar('\n');
     }
-}
-
-bool is_collision_occured(const uint8_t* screen_buffer, const block_t* block)
-{
-    const uint8_t* const p_block_tiles = block->tile_of_zero_angle + (block->angle * BLOCK_WIDTH * BLOCK_HEIGHT);
-
-    for (int8_t x = 0; x < BLOCK_WIDTH && block->x + x < SCREEN_WIDTH; ++x) {
-        int8_t bottom_y = -1;
-        for (int8_t y = BLOCK_HEIGHT - 1; y >= 0; --y) {
-            if (1 == (p_block_tiles + y * BLOCK_WIDTH)[x]) {
-                bottom_y = y;
-                break;                
-            }
-        }
-
-        if (bottom_y >= 0) {
-            const int8_t real_x = block->x + x;
-            const int8_t real_y = block->y + bottom_y;
-            if (real_y >= SCREEN_HEIGHT - 1 || (screen_buffer[real_y + 1] & (1 << real_x))) {
-                return true;
-            }
-        }
-    }
-
-    return false;
-}
-
-bool is_switch_key_pressed(const switch_key_t key)
-{
-    return g_now_switch_states[key] > 0;
-}
-
-bool is_switch_key_triggered(const switch_key_t key)
-{
-    if (0 == g_old_switch_states[key] && g_now_switch_states[key] > 0) {
-        g_old_switch_states[key] = 1;
-
-        return true;
-    }
-
-    return false;
 }
 
 void update_score_text(const int fd, const uint32_t original_score)

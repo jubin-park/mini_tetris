@@ -15,7 +15,10 @@ typedef enum {
     SWITCH_KEY_CANCEL = SWITCH_KEY_0 | SWITCH_KEY_2 | SWITCH_KEY_6 | SWITCH_KEY_8,
 } switch_key_t;
 
-uint8_t g_now_switch_states[SWITCH_KEY_SIZE];
-uint8_t g_old_switch_states[SWITCH_KEY_SIZE];
+extern uint8_t g_now_switch_states[SWITCH_KEY_SIZE];
+extern uint8_t g_old_switch_states[SWITCH_KEY_SIZE];
+
+bool is_switch_key_pressed(const switch_key_t key);
+bool is_switch_key_triggered(const switch_key_t key);
 
 #endif /* SWITCH_KEY_H */

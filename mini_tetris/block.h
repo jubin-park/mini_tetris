@@ -25,75 +25,8 @@ typedef struct {
     const uint8_t* tile_of_zero_angle;
 } block_t;
 
-const uint8_t BLOCK_TILES[BLOCK_COUNT * BLOCK_HEIGHT * ANGLE_SIZE][BLOCK_WIDTH] =
-{
-/* block 0 */
-    {0, 1, 0},
-    {1, 1, 1},
-    {0, 0, 0},
+extern const uint8_t BLOCK_TILES[BLOCK_COUNT * BLOCK_HEIGHT * ANGLE_SIZE][BLOCK_WIDTH];
 
-    {0, 1, 0},
-    {0, 1, 1},
-    {0, 1, 0},
-
-    {0, 0, 0},
-    {1, 1, 1},
-    {0, 1, 0},
-
-    {0, 1, 0},
-    {1, 1, 0},
-    {0, 1, 0},
-
-/* block 1 */
-    {1, 0, 0},
-    {1, 1, 1},
-    {0, 0, 0},
-
-    {0, 1, 1},
-    {0, 1, 0},
-    {0, 1, 0},
-
-    {0, 0, 0},
-    {1, 1, 1},
-    {0, 0, 1},
-
-    {0, 1, 0},
-    {0, 1, 0},
-    {1, 1, 0},
-
-/* block 2 */
-    {1, 1, 0},
-    {0, 1, 1},
-    {0, 0, 0},
-
-    {0, 0, 1},
-    {0, 1, 1},
-    {0, 1, 0},
-
-    {0, 0, 0},
-    {1, 1, 0},
-    {0, 1, 1},
-
-    {0, 1, 0},
-    {1, 1, 0},
-    {1, 0, 0},
-
-/* block 3 */
-    {0, 0, 0},
-    {1, 1, 1},
-    {0, 0, 0},
-
-    {0, 1, 0},
-    {0, 1, 0},
-    {0, 1, 0},
-
-    {0, 0, 0},
-    {1, 1, 1},
-    {0, 0, 0},
-
-    {0, 1, 0},
-    {0, 1, 0},
-    {0, 1, 0},
-};
+bool is_collision_occured(const uint8_t* screen_buffer, const block_t* block);
 
 #endif /* BLOCK_H */
