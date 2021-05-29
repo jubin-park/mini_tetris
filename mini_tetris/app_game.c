@@ -80,10 +80,6 @@ int main()
             
             read(fd[DRIVER_PUSH_SWITCH], g_switch_states, sizeof(g_switch_states));
 
-            for (i = 0; i < 3; ++i) {
-                printf("%3d %3d %3d\n", g_switch_states[i * 3], g_switch_states[i * 3 + 1], g_switch_states[i * 3 + 2]);
-            }
-
             if (is_switch_key_pressed(SWITCH_KEY_UP)) {
                 puts("UP");
             }
@@ -101,8 +97,9 @@ int main()
             }
         }
 
+        // draw new_screen_buffer
         if (0 == frame_count % 10)
-        {// draw new_screen_buffer
+        {
             uint8_t new_screen_buffer[SCREEN_HEIGHT];
             memcpy(new_screen_buffer, old_screen_buffer, SCREEN_HEIGHT * sizeof(uint8_t));
 
@@ -136,11 +133,11 @@ int main()
             else {
                 now_block.y++;
             }
-        }
 
-        printf("frame = %4d\n", ++frame_count);
-        display_matrix(fd[DRIVER_DOT_MATRIX]);
-        puts("");
+            printf("frame = %4d\n", ++frame_count);
+            display_matrix(fd[DRIVER_DOT_MATRIX]);
+            puts("");
+        }
 
         nanosleep(&ts_sleep, NULL);
     }
