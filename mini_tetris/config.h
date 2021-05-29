@@ -6,8 +6,10 @@
 enum {
     SCREEN_WIDTH = 7,
     SCREEN_HEIGHT = 10,
-    
+
     DEFAULT_SCORE = 10,
+
+    DRAWING_DELAY_FRAME_COUNT = 10,
 };
 
 #endif /* CONFIG_H */

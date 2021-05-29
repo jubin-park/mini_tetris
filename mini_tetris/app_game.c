@@ -111,7 +111,7 @@ old_screen_buffer[SCREEN_HEIGHT - 2] = 0x77;
         }
 
         // draw new_screen_buffer
-        if (0 == frame_count % 10) {
+        if (0 == frame_count % DRAWING_DELAY_FRAME_COUNT) {
             uint8_t new_screen_buffer[SCREEN_HEIGHT];
             memcpy(new_screen_buffer, old_screen_buffer, SCREEN_HEIGHT * sizeof(uint8_t));
 
