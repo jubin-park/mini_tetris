@@ -12,38 +12,30 @@
 #include <time.h>
 
 #include "block.h"
+#include "config.h"
 #include "driver.h"
 #include "switch_key.h"
 #include "dot10x7/font.h"
 #include "dot10x7/full.h"
-
-#define DELAY_NANOSEC_PER_FRAME (100000000L)
-
-enum {
-    SCREEN_WIDTH = 7,
-    SCREEN_HEIGHT = 10,
-    DEFAULT_SCORE = 1235,
-};
 
 bool g_is_game_running = true;
 uint32_t g_score;
 uint8_t g_score_text[4];
 
 void signal_exit(int sig);
-void display_matrix(const int fd);
+void display_matrix(const uint8_t* screen_buffer);
 bool is_collision_occured(const uint8_t* screen_buffer, const block_t* block);
 bool is_switch_key_pressed(const switch_key_t key);
 bool is_switch_key_triggered(const switch_key_t key);
-void update_score_text(const int fd, uint32_t original_score);
+void update_score_text(const int fd, const uint32_t original_score);
 
 int main()
 {
     int fd[DRIVER_SIZE] = { -1, -1, -1, -1, -1, -1 };
     {
         bool has_error = false;
-        size_t i;
 
-        for (i = 0; i < DRIVER_SIZE; ++i) {
+        for (size_t i = 0; i < DRIVER_SIZE; ++i) {
             printf("Loading driver '%s' ... ", DRIVER_NAMES[i]);
 
             fd[i] = open(DRIVER_NAMES[i], O_RDWR);
@@ -81,8 +73,8 @@ old_screen_buffer[SCREEN_HEIGHT - 2] = 0x77;
     ts_sleep.tv_sec = 0;
     ts_sleep.tv_nsec = DELAY_NANOSEC_PER_FRAME;
 
-    while (g_is_game_running)
-    {
+    while (g_is_game_running) {
+
         {// get switch key state
             read(fd[DRIVER_PUSH_SWITCH], g_now_switch_states, sizeof(g_now_switch_states));
         
@@ -114,8 +106,7 @@ old_screen_buffer[SCREEN_HEIGHT - 2] = 0x77;
         }
 
         // draw new_screen_buffer
-        if (0 == frame_count % 10)
-        {
+        if (0 == frame_count % 10) {
             uint8_t new_screen_buffer[SCREEN_HEIGHT];
             memcpy(new_screen_buffer, old_screen_buffer, SCREEN_HEIGHT * sizeof(uint8_t));
 
@@ -182,8 +173,7 @@ old_screen_buffer[SCREEN_HEIGHT - 2] = 0x77;
             }
 
             printf("frame = %4d\n", frame_count);
-            display_matrix(fd[DRIVER_DOT_MATRIX]);
-            puts("");
+            display_matrix(new_screen_buffer);
         }
 
         ++frame_count;
@@ -191,11 +181,8 @@ old_screen_buffer[SCREEN_HEIGHT - 2] = 0x77;
     }
 
 lb_exit:
-    {
-        size_t i;
-        for (i = 0; i < DRIVER_SIZE; ++i) {
-            close(fd[i]);
-        }
+    for (size_t i = 0; i < DRIVER_SIZE; ++i) {
+        close(fd[i]);
     }
 
     return 0;
@@ -207,20 +194,11 @@ void signal_exit(int sig)
     g_is_game_running = false;
 }
 
-void display_matrix(const int fd)
+void display_matrix(const uint8_t* screen_buffer)
 {
-    uint8_t read_buf[SCREEN_HEIGHT];
-
-    read(fd, read_buf, sizeof(read_buf));
-
-    for (int i = 0; i < SCREEN_HEIGHT; ++i) {
-        for (int b = SCREEN_WIDTH - 1; b >= 0; --b) {
-            if ((1 << b) & read_buf[i]) {
-                putchar('*');
-            }
-            else {
-                putchar('.');
-            }
+    for (size_t y = 0; y < SCREEN_HEIGHT; ++y) {
+        for (size_t x = SCREEN_WIDTH - 1; x >= 0; --x) {
+            putchar(((1 << x) & screen_buffer[y]) ? '*' : '.');
         }
         putchar('\n');
     }
@@ -265,27 +243,23 @@ bool is_switch_key_triggered(const switch_key_t key)
     return false;
 }
 
-void update_score_text(const int fd, uint32_t original_score)
+void update_score_text(const int fd, const uint32_t original_score)
 {
     uint32_t score = original_score;
+    uint8_t* p = g_score_text + sizeof(g_score_text);
+
     memset(g_score_text, 0, sizeof(g_score_text));
 
     if (score > 9999) {
         score = 9999;
     }
 
-    uint8_t* p = g_score_text + sizeof(g_score_text) - 1;
-
     do {
-        *p = score % 10;
+        *--p = score % 10;
         score /= 10;
-        --p;
     } while (score > 0 && p >= g_score_text);
 
-    if (write(fd, g_score_text, sizeof(g_score_text)) < 0) 
-    {
+    if (write(fd, g_score_text, sizeof(g_score_text)) < 0) {
         fprintf(stderr, "update_score_text Error\n");
     }
-
-    printf("** score %d%d%d%d\n", g_score_text[0], g_score_text[1], g_score_text[2], g_score_text[3]);
 }
