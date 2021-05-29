@@ -81,13 +81,10 @@ int main()
             for (i = 0; i < 3; ++i) {
                 printf("%3d %3d %3d\n", switch_states[i * 3], switch_states[i * 3 + 1], switch_states[i * 3 + 2]);
             }
-
-            printf("frame_count = %d\n", frame_count);
         }
 
-        if (frame_count % 10 == 0)
+        if (0 == frame_count % 10)
         {// draw new_screen_buffer
-            puts("!");
             uint8_t new_screen_buffer[SCREEN_HEIGHT];
             memcpy(new_screen_buffer, old_screen_buffer, SCREEN_HEIGHT * sizeof(uint8_t));
 
