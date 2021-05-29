@@ -22,9 +22,11 @@
 enum {
     SCREEN_WIDTH = 7,
     SCREEN_HEIGHT = 10,
+    DEFAULT_SCORE = 10,
 };
 
 bool g_is_game_running = true;
+uint32_t g_score;
 
 void signal_exit(int sig);
 void display_matrix(const int fd);
@@ -137,6 +139,23 @@ int main()
                 now_block.y = -3;
                 now_block.angle = random() % ANGLE_SIZE;
                 now_block.tile_of_zero_angle = BLOCK_TILES[(random() % BLOCK_COUNT) * BLOCK_HEIGHT * ANGLE_SIZE];
+
+                int h = 0;
+                for (int i = SCREEN_HEIGHT - 1; i >= 0; --i) {
+                    if ((new_screen_buffer[i] & 0xff) == 0x7f) {
+                        ++h;
+                    }
+                    else {
+                        break;
+                    }
+                }
+
+                for (int i = SCREEN_HEIGHT - 1 - h; i >= 0; --i) {
+                    new_screen_buffer[i + h] = new_screen_buffer[i];
+                }
+                memset(new_screen_buffer, 0x0, h * sizeof(uint8_t));
+
+                g_score += h * DEFAULT_SCORE;
             }
             else {
                 now_block.y++;
