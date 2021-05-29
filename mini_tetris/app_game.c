@@ -75,9 +75,7 @@ int main()
 
     while (g_is_game_running)
     {
-        {// get switch key state
-            size_t i;
-            
+        {// get switch key state            
             read(fd[DRIVER_PUSH_SWITCH], g_switch_states, sizeof(g_switch_states));
 
             if (is_switch_key_pressed(SWITCH_KEY_UP)) {
@@ -134,11 +132,12 @@ int main()
                 now_block.y++;
             }
 
-            printf("frame = %4d\n", ++frame_count);
+            printf("frame = %4d\n", frame_count);
             display_matrix(fd[DRIVER_DOT_MATRIX]);
             puts("");
         }
 
+        ++frame_count;
         nanosleep(&ts_sleep, NULL);
     }
 
