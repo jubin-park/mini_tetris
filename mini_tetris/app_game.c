@@ -88,6 +88,8 @@ int main()
 
             const uint8_t* p_block_tiles = now_block.tile_of_zero_angle + (now_block.angle * BLOCK_WIDTH * BLOCK_HEIGHT);
 
+            printf("now block index = %d\n", (now_block.tile_of_zero_angle - BLOCK_TILES[0]) / (BLOCK_HEIGHT * ANGLE_SIZE * BLOCK_WIDTH));
+
             // draw block on new_screen_buffer
             for (int i = 0; i < BLOCK_HEIGHT; ++i) {
                 if (now_block.y + i >= 0 && now_block.y + i < SCREEN_HEIGHT) {
