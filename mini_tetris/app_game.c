@@ -196,8 +196,8 @@ void signal_exit(int sig)
 
 void display_matrix(const uint8_t* screen_buffer)
 {
-    for (size_t y = 0; y < SCREEN_HEIGHT; ++y) {
-        for (size_t x = SCREEN_WIDTH - 1; x >= 0; --x) {
+    for (int8_t y = 0; y < SCREEN_HEIGHT; ++y) {
+        for (int8_t x = SCREEN_WIDTH - 1; x >= 0; --x) {
             putchar(((1 << x) & screen_buffer[y]) ? '*' : '.');
         }
         putchar('\n');
