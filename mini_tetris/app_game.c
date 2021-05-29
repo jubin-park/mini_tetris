@@ -93,7 +93,7 @@ int main()
             // draw block on new_screen_buffer
             for (int i = 0; i < BLOCK_HEIGHT; ++i) {
                 if (now_block.y + i >= 0 && now_block.y + i < SCREEN_HEIGHT) {
-                    new_screen_buffer[now_block.y + i] |= ((p_block_tiles + i * BLOCK_WIDTH)[0] << 2 | (p_block_tiles + i * BLOCK_WIDTH)[1] << 1 | (p_block_tiles + i * BLOCK_WIDTH)[2]) << now_block.x;    
+                    new_screen_buffer[now_block.y + i] |= ((p_block_tiles + i * BLOCK_WIDTH)[2] << 2 | (p_block_tiles + i * BLOCK_WIDTH)[1] << 1 | (p_block_tiles + i * BLOCK_WIDTH)[0]) << now_block.x;    
                 }
             }
 
