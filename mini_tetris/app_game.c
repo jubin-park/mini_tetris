@@ -78,27 +78,28 @@ int main()
         read(fd[DRIVER_PUSH_SWITCH], g_now_switch_states, sizeof(g_now_switch_states));
     
         if (is_switch_key_triggered(SWITCH_KEY_UP)) {
-            //puts("UP");
+            puts("UP");
         }
         if (is_switch_key_triggered(SWITCH_KEY_DOWN)) {
-            //puts("DOWN");
+            puts("DOWN");
         }
         if (is_switch_key_triggered(SWITCH_KEY_LEFT)) {
-            //puts("LEFT");
+            puts("LEFT");
+            /*
             --now_block.x;
             if (now_block.x < 0) {
                 now_block.x = 0;
-            }
+            }*/
         }
         else if (is_switch_key_triggered(SWITCH_KEY_RIGHT)) {
-            //puts("RIGHT");
-            ++now_block.x;
+            puts("RIGHT");
+            /*++now_block.x;
             if (now_block.x + BLOCK_WIDTH >= SCREEN_WIDTH) {
                 now_block.x = SCREEN_WIDTH - BLOCK_WIDTH;
-            }
+            }*/
         }
         if (is_switch_key_triggered(SWITCH_KEY_OK_OR_ROTATE)) {
-            //puts("OK");
+            puts("OK");
         }
 
         memcpy(g_old_switch_states, g_now_switch_states, sizeof(g_now_switch_states));
