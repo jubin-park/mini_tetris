@@ -25,10 +25,13 @@ enum {
 };
 
 bool g_is_game_running = true;
+uint8_t g_switch_states[SWITCH_KEY_SIZE];
 
 void signal_exit(int sig);
 void display_matrix(const int fd);
 bool is_collision_occured(const uint8_t* screen_buffer, const block_t* block);
+
+static inline bool is_switch_key_pressed(const switch_key_t key);
 
 int main()
 {
@@ -65,7 +68,6 @@ int main()
     
     uint32_t frame_count = 0;
     uint8_t old_screen_buffer[SCREEN_HEIGHT] = { 0 };
-    uint8_t switch_states[SWITCH_KEY_SIZE] = { 0 };
 
     struct timespec ts_sleep;
     ts_sleep.tv_sec = 0;
@@ -76,10 +78,26 @@ int main()
         {// get switch key state
             size_t i;
             
-            read(fd[DRIVER_PUSH_SWITCH], switch_states, sizeof(switch_states));
+            read(fd[DRIVER_PUSH_SWITCH], g_switch_states, sizeof(g_switch_states));
 
             for (i = 0; i < 3; ++i) {
-                printf("%3d %3d %3d\n", switch_states[i * 3], switch_states[i * 3 + 1], switch_states[i * 3 + 2]);
+                printf("%3d %3d %3d\n", g_switch_states[i * 3], g_switch_states[i * 3 + 1], g_switch_states[i * 3 + 2]);
+            }
+
+            if (is_switch_key_pressed(SWITCH_KEY_UP)) {
+                puts("UP");
+            }
+            else if (is_switch_key_pressed(SWITCH_KEY_DOWN)) {
+                puts("DOWN");
+            }
+            else if (is_switch_key_pressed(SWITCH_KEY_LEFT)) {
+                puts("LEFT");
+            }
+            else if (is_switch_key_pressed(SWITCH_KEY_RIGHT)) {
+                puts("RIGHT");
+            }
+            else if (is_switch_key_pressed(SWITCH_KEY_OK_OR_ROTATE)) {
+                puts("OK");
             }
         }
 
@@ -186,4 +204,9 @@ bool is_collision_occured(const uint8_t* screen_buffer, const block_t* block)
     }
 
     return false;
+}
+
+static inline bool is_switch_key_pressed(const switch_key_t key)
+{
+    return g_switch_states[key] > 0;
 }
