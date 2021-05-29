@@ -94,7 +94,7 @@ int main()
         else if (is_switch_key_pressed(SWITCH_KEY_RIGHT)) {
             //puts("RIGHT");
             ++now_block.x;
-            else if (now_block.x >= SCREEN_WIDTH) {
+            if (now_block.x >= SCREEN_WIDTH) {
                 now_block.x = SCREEN_WIDTH - 1;
             }
         }
