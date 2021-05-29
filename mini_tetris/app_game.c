@@ -25,13 +25,11 @@ enum {
 };
 
 bool g_is_game_running = true;
-uint8_t g_switch_states[SWITCH_KEY_SIZE];
 
 void signal_exit(int sig);
 void display_matrix(const int fd);
 bool is_collision_occured(const uint8_t* screen_buffer, const block_t* block);
-
-static inline bool is_switch_key_pressed(const switch_key_t key);
+bool is_switch_key_pressed(const switch_key_t key);
 
 int main()
 {
@@ -94,8 +92,8 @@ int main()
         else if (is_switch_key_pressed(SWITCH_KEY_RIGHT)) {
             //puts("RIGHT");
             ++now_block.x;
-            if (now_block.x >= SCREEN_WIDTH) {
-                now_block.x = SCREEN_WIDTH - 1;
+            if (now_block.x + BLOCK_WIDTH >= SCREEN_WIDTH) {
+                now_block.x = SCREEN_WIDTH - BLOCK_WIDTH;
             }
         }
         if (is_switch_key_pressed(SWITCH_KEY_OK_OR_ROTATE)) {
@@ -209,7 +207,7 @@ bool is_collision_occured(const uint8_t* screen_buffer, const block_t* block)
     return false;
 }
 
-static inline bool is_switch_key_pressed(const switch_key_t key)
+bool is_switch_key_pressed(const switch_key_t key)
 {
     return g_switch_states[key] > 0;
 }
