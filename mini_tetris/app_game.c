@@ -17,6 +17,8 @@
 #include "dot10x7/font.h"
 #include "dot10x7/full.h"
 
+#define DELAY_NANOSEC_PER_FRAME (100000000L)
+
 enum {
     SCREEN_WIDTH = 7,
     SCREEN_HEIGHT = 10,
@@ -52,7 +54,6 @@ int main()
     }
 
     (void)signal(SIGINT, signal_exit);
-
     srandom((unsigned int)time(NULL));
 
     block_t now_block = {
@@ -62,13 +63,13 @@ int main()
         .tile_of_zero_angle = BLOCK_TILES[(random() % BLOCK_COUNT) * BLOCK_HEIGHT * ANGLE_SIZE]
     };
     
-    uint32_t game_frame = 0;
+    uint32_t frame_count = 0;
     uint8_t old_screen_buffer[SCREEN_HEIGHT] = { 0 };
     uint8_t switch_states[SWITCH_KEY_SIZE] = { 0 };
 
     struct timespec ts_sleep;
-    ts_sleep.tv_sec = 1;
-    ts_sleep.tv_nsec = 0L;
+    ts_sleep.tv_sec = 0;
+    ts_sleep.tv_nsec = DELAY_NANOSEC_PER_FRAME;
 
     while (g_is_game_running)
     {
@@ -80,9 +81,13 @@ int main()
             for (i = 0; i < 3; ++i) {
                 printf("%3d %3d %3d\n", switch_states[i * 3], switch_states[i * 3 + 1], switch_states[i * 3 + 2]);
             }
+
+            printf("frame_count = %d\n", frame_count);
         }
 
+        if (frame_count % 10 == 0)
         {// draw new_screen_buffer
+            puts("!");
             uint8_t new_screen_buffer[SCREEN_HEIGHT];
             memcpy(new_screen_buffer, old_screen_buffer, SCREEN_HEIGHT * sizeof(uint8_t));
 
@@ -118,7 +123,7 @@ int main()
             }
         }
 
-        printf("frame = %4d\n", ++game_frame);
+        printf("frame = %4d\n", ++frame_count);
         display_matrix(fd[DRIVER_DOT_MATRIX]);
         puts("");
 
