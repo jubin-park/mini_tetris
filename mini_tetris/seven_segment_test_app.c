@@ -6,7 +6,7 @@
 #include <fcntl.h>
 #include <string.h>
 #define MAX_DIGIT 4
-#define FND_DEVICE "/dev/csemad_seven_segment"
+#define SEVEN_SEGMENT_DEVICE "/dev/csemad_seven_segment"
 
 int main(int argc, char **argv)
 {
@@ -44,11 +44,11 @@ int main(int argc, char **argv)
         data[i] = argv[1][i] - 0x30;
     }
     
-    dev = open(FND_DEVICE, O_RDWR);
+    dev = open(SEVEN_SEGMENT_DEVICE, O_RDWR);
     
     if (dev < 0) 
     {
-        printf("Device open error : %s\n", FND_DEVICE);
+        printf("Device open error : %s\n", SEVEN_SEGMENT_DEVICE);
         exit(1);
     }
     
