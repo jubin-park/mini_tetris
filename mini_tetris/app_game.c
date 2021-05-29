@@ -74,35 +74,36 @@ int main()
 
     while (g_is_game_running)
     {
-        // get switch key state            
-        read(fd[DRIVER_PUSH_SWITCH], g_now_switch_states, sizeof(g_now_switch_states));
-    
-        if (is_switch_key_triggered(SWITCH_KEY_UP)) {
-            puts("UP");
-        }
-        if (is_switch_key_triggered(SWITCH_KEY_DOWN)) {
-            puts("DOWN");
-        }
-        if (is_switch_key_triggered(SWITCH_KEY_LEFT)) {
-            puts("LEFT");
-            /*
-            --now_block.x;
-            if (now_block.x < 0) {
-                now_block.x = 0;
-            }*/
-        }
-        else if (is_switch_key_triggered(SWITCH_KEY_RIGHT)) {
-            puts("RIGHT");
-            /*++now_block.x;
-            if (now_block.x + BLOCK_WIDTH >= SCREEN_WIDTH) {
-                now_block.x = SCREEN_WIDTH - BLOCK_WIDTH;
-            }*/
-        }
-        if (is_switch_key_triggered(SWITCH_KEY_OK_OR_ROTATE)) {
-            puts("OK");
+        {// get switch key state
+            read(fd[DRIVER_PUSH_SWITCH], g_now_switch_states, sizeof(g_now_switch_states));
+        
+            if (is_switch_key_triggered(SWITCH_KEY_UP)) {
+                puts("UP");
+            }
+            if (is_switch_key_triggered(SWITCH_KEY_DOWN)) {
+                puts("DOWN");
+            }
+            if (is_switch_key_triggered(SWITCH_KEY_LEFT)) {
+                puts("LEFT");
+                --now_block.x;
+                if (now_block.x < 0) {
+                    now_block.x = 0;
+                }
+            }
+            else if (is_switch_key_triggered(SWITCH_KEY_RIGHT)) {
+                puts("RIGHT");
+                ++now_block.x;
+                if (now_block.x + BLOCK_WIDTH >= SCREEN_WIDTH) {
+                    now_block.x = SCREEN_WIDTH - BLOCK_WIDTH;
+                }
+            }
+            if (is_switch_key_triggered(SWITCH_KEY_OK_OR_ROTATE)) {
+                puts("OK");
+            }
+
+            memcpy(g_old_switch_states, g_now_switch_states, sizeof(g_now_switch_states));
         }
 
-        memcpy(g_old_switch_states, g_now_switch_states, sizeof(g_now_switch_states));
 
         // draw new_screen_buffer
         if (0 == frame_count % 10)
