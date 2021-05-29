@@ -14,9 +14,18 @@ static const char* DRIVER_NAMES[DRIVER_SIZE] = {
     "/dev/csemad_push_switch"
 };
 
+static const uint8_t DRIVER_DATA_LENGTHS[DRIVER_SIZE] = {
+    LED_DATA_LENGTH,
+    SEVEN_SEGMENT_DATA_LENGTH,
+    DOT_MATRIX_DATA_LENGTH,
+    LCD_TEXT_DATA_LENGTH,
+    BUZZER_DATA_LENGTH,
+    PUSH_SWITCH_DATA_LENGTH
+};
+
 static int s_driver_file_descriptors[DRIVER_SIZE] = { -1, -1, -1, -1, -1, -1 };
 
-uint8_t g_score_text[LCD_TEXT_LENGTH];
+uint8_t g_score_text[SEVEN_SEGMENT_DATA_LENGTH];
 
 bool open_drivers(void)
 {
@@ -49,15 +58,19 @@ void close_drivers(void)
 
 void clear_drivers(void)
 {
-    write(s_driver_file_descriptors[DRIVER_SEVEN_SEGMENT], g_score_text, LCD_TEXT_LENGTH);
+    uint8_t zeros[32] = { 0 };
+
+    for (size_t i = 0; i < DRIVER_SIZE; ++i) {
+        write(s_driver_file_descriptors[i], zeros, DRIVER_DATA_LENGTHS[i]);
+    }
 }
 
 void update_score_text(const uint32_t original_score)
 {
     uint32_t score = original_score;
-    uint8_t* p = g_score_text + LCD_TEXT_LENGTH;
+    uint8_t* p = g_score_text + SEVEN_SEGMENT_DATA_LENGTH;
 
-    memset(g_score_text, 0, LCD_TEXT_LENGTH);
+    memset(g_score_text, 0, SEVEN_SEGMENT_DATA_LENGTH);
 
     if (score > 9999) {
         score = 9999;
@@ -68,7 +81,7 @@ void update_score_text(const uint32_t original_score)
         score /= 10;
     } while (score > 0 && p >= g_score_text);
 
-    if (write(s_driver_file_descriptors[DRIVER_SEVEN_SEGMENT], g_score_text, LCD_TEXT_LENGTH) < 0) {
+    if (write(s_driver_file_descriptors[DRIVER_SEVEN_SEGMENT], g_score_text, SEVEN_SEGMENT_DATA_LENGTH) < 0) {
         fprintf(stderr, "update_score_text Error\n");
     }
 }

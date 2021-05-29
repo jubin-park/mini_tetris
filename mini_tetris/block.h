@@ -4,6 +4,8 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#include "config.h"
+
 enum {
     BLOCK_WIDTH = 3,
     BLOCK_HEIGHT = 3,
@@ -15,6 +17,7 @@ typedef enum {
     ANGLE_90,
     ANGLE_180,
     ANGLE_270,
+    /* SIZE */
     ANGLE_SIZE
 } angle_t;
 
@@ -24,8 +27,6 @@ typedef struct {
     angle_t angle;
     const uint8_t* tile_of_zero_angle;
 } block_t;
-
-extern const uint8_t BLOCK_TILES[BLOCK_COUNT * BLOCK_HEIGHT * ANGLE_SIZE][BLOCK_WIDTH];
 
 bool is_collision_occured(const uint8_t* screen_buffer, const block_t* block);
 

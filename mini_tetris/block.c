@@ -1,4 +1,3 @@
-#include "config.h"
 #include "block.h"
 
 const uint8_t BLOCK_TILES[BLOCK_COUNT * BLOCK_HEIGHT * ANGLE_SIZE][BLOCK_WIDTH] =
@@ -81,6 +80,7 @@ bool is_collision_occured(const uint8_t* screen_buffer, const block_t* block)
         for (int8_t y = BLOCK_HEIGHT - 1; y >= 0; --y) {
             if (1 == (p_block_tiles + y * BLOCK_WIDTH)[x]) {
                 bottom_y = y;
+
                 break;                
             }
         }
@@ -88,6 +88,7 @@ bool is_collision_occured(const uint8_t* screen_buffer, const block_t* block)
         if (bottom_y >= 0) {
             const int8_t real_x = block->x + x;
             const int8_t real_y = block->y + bottom_y;
+
             if (real_y >= SCREEN_HEIGHT - 1 || (screen_buffer[real_y + 1] & (1 << real_x))) {
                 return true;
             }

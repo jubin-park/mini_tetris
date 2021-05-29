@@ -7,7 +7,12 @@
 #include "stdbool.h"
 
 enum {
-    LCD_TEXT_LENGTH = 4
+    LED_DATA_LENGTH = 1,
+    SEVEN_SEGMENT_DATA_LENGTH = 4,
+    DOT_MATRIX_DATA_LENGTH = 20,
+    LCD_TEXT_DATA_LENGTH = 32,
+    BUZZER_DATA_LENGTH = 1,
+    PUSH_SWITCH_DATA_LENGTH = 9
 };
 
 typedef enum {
@@ -17,6 +22,7 @@ typedef enum {
     DRIVER_LCD_TEXT,
     DRIVER_BUZZER,
     DRIVER_PUSH_SWITCH,
+    /* SIZE */
     DRIVER_SIZE
 } driver_t;
 

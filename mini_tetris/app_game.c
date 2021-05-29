@@ -18,20 +18,26 @@
 #include "dot10x7/font.h"
 #include "dot10x7/full.h"
 
+extern const uint8_t BLOCK_TILES[BLOCK_COUNT * BLOCK_HEIGHT * ANGLE_SIZE][BLOCK_WIDTH];
+extern uint8_t g_score_text[SEVEN_SEGMENT_DATA_LENGTH];
+extern uint8_t g_now_switch_states[SWITCH_KEY_SIZE];
+extern uint8_t g_old_switch_states[SWITCH_KEY_SIZE];
+
 bool g_is_game_running = true;
 uint32_t g_score;
-extern uint8_t g_score_text[LCD_TEXT_LENGTH];
 
 void signal_exit(int sig);
 void display_matrix(const uint8_t* screen_buffer);
 
-int main()
+int main(void)
 {
     if (!open_drivers()) {
         fprintf(stderr, "Try to execute it in sudo mode\n");
 
         goto lb_exit;
     }
+
+    clear_drivers();
 
     (void)signal(SIGINT, signal_exit);
     srandom((unsigned int)time(NULL));
@@ -167,6 +173,7 @@ old_screen_buffer[SCREEN_HEIGHT - 2] = 0x77;
     }
 
 lb_exit:
+    clear_drivers();
     close_drivers();
 
     return 0;
