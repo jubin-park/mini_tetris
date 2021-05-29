@@ -87,16 +87,16 @@ int main()
             if (is_switch_key_pressed(SWITCH_KEY_UP)) {
                 puts("UP");
             }
-            else if (is_switch_key_pressed(SWITCH_KEY_DOWN)) {
+            if (is_switch_key_pressed(SWITCH_KEY_DOWN)) {
                 puts("DOWN");
             }
-            else if (is_switch_key_pressed(SWITCH_KEY_LEFT)) {
+            if (is_switch_key_pressed(SWITCH_KEY_LEFT)) {
                 puts("LEFT");
             }
-            else if (is_switch_key_pressed(SWITCH_KEY_RIGHT)) {
+            if (is_switch_key_pressed(SWITCH_KEY_RIGHT)) {
                 puts("RIGHT");
             }
-            else if (is_switch_key_pressed(SWITCH_KEY_OK_OR_ROTATE)) {
+            if (is_switch_key_pressed(SWITCH_KEY_OK_OR_ROTATE)) {
                 puts("OK");
             }
         }
