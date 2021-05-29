@@ -69,6 +69,7 @@ int main()
     
     uint32_t frame_count = 0;
     uint8_t old_screen_buffer[SCREEN_HEIGHT] = { 0 };
+old_screen_buffer[SCREEN_HEIGHT - 1] = 0x77;
 
     struct timespec ts_sleep;
     ts_sleep.tv_sec = 0;
@@ -106,7 +107,6 @@ int main()
             memcpy(g_old_switch_states, g_now_switch_states, sizeof(g_now_switch_states));
         }
 
-
         // draw new_screen_buffer
         if (0 == frame_count % 10)
         {
@@ -133,8 +133,6 @@ int main()
             if (is_collision_occured(new_screen_buffer, &now_block)) {
                 printf("collision occured\n");
 
-                memcpy(old_screen_buffer, new_screen_buffer, SCREEN_HEIGHT * sizeof(uint8_t));
-
                 now_block.x = 0;
                 now_block.y = -3;
                 now_block.angle = random() % ANGLE_SIZE;
@@ -150,12 +148,16 @@ int main()
                     }
                 }
 
-                for (int i = SCREEN_HEIGHT - 1 - h; i >= 0; --i) {
-                    new_screen_buffer[i + h] = new_screen_buffer[i];
-                }
-                memset(new_screen_buffer, 0x0, h * sizeof(uint8_t));
+                if (h > 0) {
+                    for (int i = SCREEN_HEIGHT - h; i >= 0; --i) {
+                        new_screen_buffer[i + h] = new_screen_buffer[i];
+                    }
+                    memset(new_screen_buffer, 0x0, h * sizeof(uint8_t));
 
-                g_score += h * DEFAULT_SCORE;
+                    g_score += h * DEFAULT_SCORE;
+                }
+
+                memcpy(old_screen_buffer, new_screen_buffer, SCREEN_HEIGHT * sizeof(uint8_t));
             }
             else {
                 now_block.y++;
