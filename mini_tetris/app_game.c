@@ -30,6 +30,7 @@ void signal_exit(int sig);
 void display_matrix(const int fd);
 bool is_collision_occured(const uint8_t* screen_buffer, const block_t* block);
 bool is_switch_key_pressed(const switch_key_t key);
+bool is_switch_key_triggered(const switch_key_t key);
 
 int main()
 {
@@ -74,31 +75,33 @@ int main()
     while (g_is_game_running)
     {
         // get switch key state            
-        read(fd[DRIVER_PUSH_SWITCH], g_switch_states, sizeof(g_switch_states));
-
-        if (is_switch_key_pressed(SWITCH_KEY_UP)) {
+        read(fd[DRIVER_PUSH_SWITCH], g_now_switch_states, sizeof(g_now_switch_states));
+    
+        if (is_switch_key_triggered(SWITCH_KEY_UP)) {
             //puts("UP");
         }
-        if (is_switch_key_pressed(SWITCH_KEY_DOWN)) {
+        if (is_switch_key_triggered(SWITCH_KEY_DOWN)) {
             //puts("DOWN");
         }
-        if (is_switch_key_pressed(SWITCH_KEY_LEFT)) {
+        if (is_switch_key_triggered(SWITCH_KEY_LEFT)) {
             //puts("LEFT");
             --now_block.x;
             if (now_block.x < 0) {
                 now_block.x = 0;
             }
         }
-        else if (is_switch_key_pressed(SWITCH_KEY_RIGHT)) {
+        else if (is_switch_key_triggered(SWITCH_KEY_RIGHT)) {
             //puts("RIGHT");
             ++now_block.x;
             if (now_block.x + BLOCK_WIDTH >= SCREEN_WIDTH) {
                 now_block.x = SCREEN_WIDTH - BLOCK_WIDTH;
             }
         }
-        if (is_switch_key_pressed(SWITCH_KEY_OK_OR_ROTATE)) {
+        if (is_switch_key_triggered(SWITCH_KEY_OK_OR_ROTATE)) {
             //puts("OK");
         }
+
+        memcpy(g_old_switch_states, g_now_switch_states, sizeof(g_now_switch_states));
 
         // draw new_screen_buffer
         if (0 == frame_count % 10)
@@ -209,5 +212,14 @@ bool is_collision_occured(const uint8_t* screen_buffer, const block_t* block)
 
 bool is_switch_key_pressed(const switch_key_t key)
 {
-    return g_switch_states[key] > 0;
+    return g_now_switch_states[key] > 0;
+}
+
+bool is_switch_key_triggered(const switch_key_t key)
+{
+    if (0 == g_old_switch_states[key] && g_now_switch_states[key] > 0) {
+        g_old_switch_states[key] = 1;
+        return true;
+    }
+    return false;
 }
