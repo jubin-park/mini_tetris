@@ -75,24 +75,31 @@ int main()
 
     while (g_is_game_running)
     {
-        {// get switch key state            
-            read(fd[DRIVER_PUSH_SWITCH], g_switch_states, sizeof(g_switch_states));
+        // get switch key state            
+        read(fd[DRIVER_PUSH_SWITCH], g_switch_states, sizeof(g_switch_states));
 
-            if (is_switch_key_pressed(SWITCH_KEY_UP)) {
-                puts("UP");
+        if (is_switch_key_pressed(SWITCH_KEY_UP)) {
+            //puts("UP");
+        }
+        if (is_switch_key_pressed(SWITCH_KEY_DOWN)) {
+            //puts("DOWN");
+        }
+        if (is_switch_key_pressed(SWITCH_KEY_LEFT)) {
+            //puts("LEFT");
+            --now_block.x;
+            if (now_block.x < 0) {
+                now_block.x = 0;
             }
-            if (is_switch_key_pressed(SWITCH_KEY_DOWN)) {
-                puts("DOWN");
+        }
+        else if (is_switch_key_pressed(SWITCH_KEY_RIGHT)) {
+            //puts("RIGHT");
+            ++now_block.x;
+            else if (now_block.x >= SCREEN_WIDTH) {
+                now_block.x = SCREEN_WIDTH - 1;
             }
-            if (is_switch_key_pressed(SWITCH_KEY_LEFT)) {
-                puts("LEFT");
-            }
-            if (is_switch_key_pressed(SWITCH_KEY_RIGHT)) {
-                puts("RIGHT");
-            }
-            if (is_switch_key_pressed(SWITCH_KEY_OK_OR_ROTATE)) {
-                puts("OK");
-            }
+        }
+        if (is_switch_key_pressed(SWITCH_KEY_OK_OR_ROTATE)) {
+            //puts("OK");
         }
 
         // draw new_screen_buffer
