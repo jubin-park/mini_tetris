@@ -149,7 +149,7 @@ void display_matrix(const int fd)
     read(fd, read_buf, sizeof(read_buf));
 
     for (int i = 0; i < SCREEN_HEIGHT; ++i) {
-        for (int b = 0; b < SCREEN_WIDTH; ++b) {
+        for (int b = SCREEN_WIDTH - 1; b >= 0; --b) {
             if ((1 << b) & read_buf[i]) {
                 putchar('*');
             }
