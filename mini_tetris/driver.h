@@ -1,6 +1,15 @@
 #ifndef DRIVER_H
 #define DRIVER_H
 
+#include <unistd.h>
+
+#include "stdint.h"
+#include "stdbool.h"
+
+enum {
+    LCD_TEXT_LENGTH = 4
+};
+
 typedef enum {
     DRIVER_LED,
     DRIVER_SEVEN_SEGMENT,
@@ -11,13 +20,12 @@ typedef enum {
     DRIVER_SIZE
 } driver_t;
 
-const char* DRIVER_NAMES[DRIVER_SIZE] = {
-    "/dev/csemad_led",
-    "/dev/csemad_seven_segment",
-    "/dev/csemad_dot_matrix",
-    "/dev/csemad_lcd_text",
-    "/dev/csemad_buzzer",
-    "/dev/csemad_push_switch"
-};
+bool open_drivers(void);
+void close_drivers(void);
+
+void clear_drivers(void);
+
+void update_score_text(const uint32_t original_score);
+int get_driver_file_descriptor(const driver_t driver);
 
 #endif /* DRIVER_H */

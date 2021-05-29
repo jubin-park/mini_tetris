@@ -20,35 +20,17 @@
 
 bool g_is_game_running = true;
 uint32_t g_score;
-uint8_t g_score_text[4];
+extern uint8_t g_score_text[LCD_TEXT_LENGTH];
 
 void signal_exit(int sig);
 void display_matrix(const uint8_t* screen_buffer);
-void update_score_text(const int fd, const uint32_t original_score);
 
 int main()
 {
-    int fd[DRIVER_SIZE] = { -1, -1, -1, -1, -1, -1 };
-    {
-        bool has_error = false;
+    if (!open_drivers()) {
+        fprintf(stderr, "Try to execute it in sudo mode\n");
 
-        for (size_t i = 0; i < DRIVER_SIZE; ++i) {
-            printf("Loading driver '%s' ... ", DRIVER_NAMES[i]);
-
-            fd[i] = open(DRIVER_NAMES[i], O_RDWR);
-            has_error |= fd[i] < 0;
-
-            puts(fd[i] < 0 ? "FAILED" : "success");
-        }
-
-        if (has_error) {
-            fprintf(stderr, "Try to execute it in sudo mode\n");
-
-            goto lb_exit;
-        }
-
-        memset(g_score_text, 0x0, 4);
-        write(fd[DRIVER_SEVEN_SEGMENT], g_score_text, 4);
+        goto lb_exit;
     }
 
     (void)signal(SIGINT, signal_exit);
@@ -74,7 +56,7 @@ old_screen_buffer[SCREEN_HEIGHT - 2] = 0x77;
     while (g_is_game_running) {
 
         {// get switch key state
-            if (read(fd[DRIVER_PUSH_SWITCH], g_now_switch_states, sizeof(g_now_switch_states)) < 0) {
+            if (read(get_driver_file_descriptor(DRIVER_PUSH_SWITCH), g_now_switch_states, sizeof(g_now_switch_states)) < 0) {
                 fprintf(stderr, "Failed to read switch key\n");
 
                 goto lb_exit;
@@ -126,7 +108,7 @@ old_screen_buffer[SCREEN_HEIGHT - 2] = 0x77;
             }
 
             // real drawing
-            if (write(fd[DRIVER_DOT_MATRIX], new_screen_buffer, SCREEN_HEIGHT * sizeof(uint8_t)) < 0) {
+            if (write(get_driver_file_descriptor(DRIVER_DOT_MATRIX), new_screen_buffer, SCREEN_HEIGHT * sizeof(uint8_t)) < 0) {
                 fprintf(stderr, "write() error\n");
                 
                 goto lb_exit;
@@ -168,7 +150,7 @@ old_screen_buffer[SCREEN_HEIGHT - 2] = 0x77;
                     memset(new_screen_buffer, 0x0, removed_height * sizeof(uint8_t));
                     g_score += removed_height * DEFAULT_SCORE;
 
-                    update_score_text(fd[DRIVER_SEVEN_SEGMENT], g_score);
+                    update_score_text(g_score);
                 }
 
                 memcpy(old_screen_buffer, new_screen_buffer, SCREEN_HEIGHT * sizeof(uint8_t));
@@ -185,9 +167,7 @@ old_screen_buffer[SCREEN_HEIGHT - 2] = 0x77;
     }
 
 lb_exit:
-    for (size_t i = 0; i < DRIVER_SIZE; ++i) {
-        close(fd[i]);
-    }
+    close_drivers();
 
     return 0;
 }
@@ -205,26 +185,5 @@ void display_matrix(const uint8_t* screen_buffer)
             putchar(((1 << x) & screen_buffer[y]) ? '*' : '.');
         }
         putchar('\n');
-    }
-}
-
-void update_score_text(const int fd, const uint32_t original_score)
-{
-    uint32_t score = original_score;
-    uint8_t* p = g_score_text + sizeof(g_score_text);
-
-    memset(g_score_text, 0, sizeof(g_score_text));
-
-    if (score > 9999) {
-        score = 9999;
-    }
-
-    do {
-        *--p = score % 10;
-        score /= 10;
-    } while (score > 0 && p >= g_score_text);
-
-    if (write(fd, g_score_text, sizeof(g_score_text)) < 0) {
-        fprintf(stderr, "update_score_text Error\n");
     }
 }
