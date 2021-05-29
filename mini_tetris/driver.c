@@ -61,7 +61,9 @@ void clear_drivers(void)
     uint8_t zeros[32] = { 0 };
 
     for (size_t i = 0; i < DRIVER_SIZE; ++i) {
-        write(s_driver_file_descriptors[i], zeros, DRIVER_DATA_LENGTHS[i]);
+        if (s_driver_file_descriptors[i] >= 0) {
+            write(s_driver_file_descriptors[i], zeros, DRIVER_DATA_LENGTHS[i]);
+        }
     }
 }
 
