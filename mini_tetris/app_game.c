@@ -87,8 +87,7 @@ int main()
             memcpy(new_screen_buffer, old_screen_buffer, SCREEN_HEIGHT * sizeof(uint8_t));
 
             const uint8_t* p_block_tiles = now_block.tile_of_zero_angle + (now_block.angle * BLOCK_WIDTH * BLOCK_HEIGHT);
-
-            printf("now block index = %d\n", (now_block.tile_of_zero_angle - BLOCK_TILES[0]) / (BLOCK_HEIGHT * ANGLE_SIZE * BLOCK_WIDTH));
+            printf("block #%2d\tangle %3d\n", (now_block.tile_of_zero_angle - BLOCK_TILES[0]) / (BLOCK_HEIGHT * ANGLE_SIZE * BLOCK_WIDTH), now_block.angle * 90);
 
             // draw block on new_screen_buffer
             for (int i = 0; i < BLOCK_HEIGHT; ++i) {
