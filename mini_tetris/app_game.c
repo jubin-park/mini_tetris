@@ -45,7 +45,7 @@ int main()
         }
 
         if (has_error) {
-            printf("Try to execute it in sudo mode\n");
+            fprintf(stderr, "Try to execute it in sudo mode\n");
 
             goto lb_exit;
         }
@@ -69,14 +69,19 @@ int main()
 old_screen_buffer[SCREEN_HEIGHT - 1] = 0x77;
 old_screen_buffer[SCREEN_HEIGHT - 2] = 0x77;
 
-    struct timespec ts_sleep;
-    ts_sleep.tv_sec = 0;
-    ts_sleep.tv_nsec = DELAY_NANOSEC_PER_FRAME;
+    struct timespec ts_sleep = {
+        .tv_sec = 0,
+        .tv_nsec = DELAY_NANOSEC_PER_FRAME
+    };
 
     while (g_is_game_running) {
 
         {// get switch key state
-            read(fd[DRIVER_PUSH_SWITCH], g_now_switch_states, sizeof(g_now_switch_states));
+            if (read(fd[DRIVER_PUSH_SWITCH], g_now_switch_states, sizeof(g_now_switch_states)) < 0) {
+                fprintf(stderr, "Failed to read switch key\n");
+
+                goto lb_exit;
+            }
         
             if (is_switch_key_triggered(SWITCH_KEY_UP)) {
                 puts("UP");
@@ -111,7 +116,10 @@ old_screen_buffer[SCREEN_HEIGHT - 2] = 0x77;
             memcpy(new_screen_buffer, old_screen_buffer, SCREEN_HEIGHT * sizeof(uint8_t));
 
             const uint8_t* p_block_tiles = now_block.tile_of_zero_angle + (now_block.angle * BLOCK_WIDTH * BLOCK_HEIGHT);
-            printf("block #%2d\tangle %3d\n", (now_block.tile_of_zero_angle - BLOCK_TILES[0]) / (BLOCK_HEIGHT * ANGLE_SIZE * BLOCK_WIDTH), now_block.angle * 90);
+            printf("block #%d\tangle: %3d\tframe: %6d\n",
+                (now_block.tile_of_zero_angle - BLOCK_TILES[0]) / (BLOCK_HEIGHT * ANGLE_SIZE * BLOCK_WIDTH),
+                now_block.angle * 90,
+                frame_count);
 
             // draw block on new_screen_buffer
             for (int i = 0; i < BLOCK_HEIGHT; ++i) {
@@ -135,16 +143,16 @@ old_screen_buffer[SCREEN_HEIGHT - 2] = 0x77;
                 now_block.angle = random() % ANGLE_SIZE;
                 now_block.tile_of_zero_angle = BLOCK_TILES[(random() % BLOCK_COUNT) * BLOCK_HEIGHT * ANGLE_SIZE];
 
-                int removed_height = 0;
+                int8_t removed_height = 0;
                 
                 while (true) {
                     bool is_line_found = false;
 
-                    for (int h = SCREEN_HEIGHT - 1; h >= 0; --h) {
+                    for (int8_t h = SCREEN_HEIGHT - 1; h >= 0; --h) {
                         if ((new_screen_buffer[h] & 0xff) == 0x7f) {
                             ++removed_height;
                             
-                            for (int i = h; i >= 1; --i) {
+                            for (int8_t i = h; i >= 1; --i) {
                                 new_screen_buffer[i] = new_screen_buffer[i - 1];
                             }
 
@@ -172,12 +180,11 @@ old_screen_buffer[SCREEN_HEIGHT - 2] = 0x77;
                 now_block.y++;
             }
 
-            printf("frame = %4d\n", frame_count);
             display_matrix(new_screen_buffer);
         }
 
-        ++frame_count;
         nanosleep(&ts_sleep, NULL);
+        ++frame_count;
     }
 
 lb_exit:
@@ -238,8 +245,10 @@ bool is_switch_key_triggered(const switch_key_t key)
 {
     if (0 == g_old_switch_states[key] && g_now_switch_states[key] > 0) {
         g_old_switch_states[key] = 1;
+
         return true;
     }
+
     return false;
 }
 

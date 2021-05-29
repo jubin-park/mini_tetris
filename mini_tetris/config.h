@@ -6,7 +6,8 @@
 enum {
     SCREEN_WIDTH = 7,
     SCREEN_HEIGHT = 10,
-    DEFAULT_SCORE = 1235,
+    
+    DEFAULT_SCORE = 10,
 };
 
 #endif /* CONFIG_H */
