@@ -138,23 +138,33 @@ old_screen_buffer[SCREEN_HEIGHT - 1] = 0x77;
                 now_block.angle = random() % ANGLE_SIZE;
                 now_block.tile_of_zero_angle = BLOCK_TILES[(random() % BLOCK_COUNT) * BLOCK_HEIGHT * ANGLE_SIZE];
 
-                int h = 0;
-                for (int i = SCREEN_HEIGHT - 1; i >= 0; --i) {
-                    if ((new_screen_buffer[i] & 0xff) == 0x7f) {
-                        ++h;
+                int removed_height = 0;
+                
+                while (true) {
+                    bool is_line_found = false;
+
+                    for (int h = SCREEN_HEIGHT - 1; h >= 0; --h) {
+                        if ((new_screen_buffer[h] & 0xff) == 0x7f) {
+                            ++removed_height;
+                            
+                            for (int i = h; i >= 1; --i) {
+                                new_screen_buffer[i] = new_screen_buffer[i - 1];
+                            }
+
+                            is_line_found = true;
+
+                            break;
+                        }
                     }
-                    else {
+
+                    if (!is_line_found) {
                         break;
                     }
                 }
 
-                if (h > 0) {
-                    for (int i = SCREEN_HEIGHT - h; i >= 0; --i) {
-                        new_screen_buffer[i + h] = new_screen_buffer[i];
-                    }
-                    memset(new_screen_buffer, 0x0, h * sizeof(uint8_t));
-
-                    g_score += h * DEFAULT_SCORE;
+                if (removed_height > 0) {
+                    memset(new_screen_buffer, 0x0, removed_height * sizeof(uint8_t));
+                    g_score += removed_height * DEFAULT_SCORE;
                 }
 
                 memcpy(old_screen_buffer, new_screen_buffer, SCREEN_HEIGHT * sizeof(uint8_t));
