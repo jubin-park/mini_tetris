@@ -51,8 +51,8 @@ int main(void)
     
     uint32_t frame_count = 0;
     uint8_t old_screen_buffer[SCREEN_HEIGHT] = { 0 };
-old_screen_buffer[SCREEN_HEIGHT - 1] = 0x77;
-old_screen_buffer[SCREEN_HEIGHT - 2] = 0x77;
+old_screen_buffer[SCREEN_HEIGHT - 1] = 0x6f;
+old_screen_buffer[SCREEN_HEIGHT - 2] = 0x6f;
 
     struct timespec ts_sleep = {
         .tv_sec = 0,
