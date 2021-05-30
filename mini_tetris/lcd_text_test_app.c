@@ -20,7 +20,7 @@ int main(int argc, char **argv)
 
     memset(string, 0, sizeof(string));
     
-    if (argc < 2 && argc > 3) 
+    if (argc < 2 || argc > 3) 
     {
         printf("Invalid Value Arguments!\n");
         return -1;
