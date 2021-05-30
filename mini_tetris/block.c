@@ -75,8 +75,9 @@ bool is_passable_down(const uint8_t* screen_buffer, const block_t* block)
 {
     const uint8_t* const p_block_tiles = block->tile_of_zero_angle + (block->angle * BLOCK_WIDTH * BLOCK_HEIGHT);
 
-    for (int8_t x = 0; x < BLOCK_WIDTH && block->x + x < SCREEN_WIDTH; ++x) {
+    for (int8_t x = 0; x < BLOCK_WIDTH; ++x) {
         int8_t bottom_y = -1;
+
         for (int8_t y = BLOCK_HEIGHT - 1; y >= 0; --y) {
             if (1 == (p_block_tiles + y * BLOCK_WIDTH)[x]) {
                 bottom_y = y;
@@ -89,7 +90,8 @@ bool is_passable_down(const uint8_t* screen_buffer, const block_t* block)
             const int8_t real_x = block->x + x;
             const int8_t real_y = block->y + bottom_y;
 
-            if (real_y >= SCREEN_HEIGHT - 1 || (screen_buffer[real_y + 1] & (1 << real_x))) {
+            if (real_y >= SCREEN_HEIGHT - 1
+                || (screen_buffer[real_y + 1] & (1 << real_x)) > 0) {
                 return false;
             }
         }
@@ -100,15 +102,102 @@ bool is_passable_down(const uint8_t* screen_buffer, const block_t* block)
 
 bool is_passable_left(const uint8_t* screen_buffer, const block_t* block)
 {
-    return false;
+    const uint8_t* const p_block_tiles = block->tile_of_zero_angle + (block->angle * BLOCK_WIDTH * BLOCK_HEIGHT);
+
+    for (int8_t y = 0; y < BLOCK_HEIGHT; ++y) {
+        int8_t left_x = -1;
+
+        if (block->y + y >= 0) {
+            //TODO
+        }
+
+        for (int8_t x = 0; x < BLOCK_WIDTH; ++x) {
+            if (1 == (p_block_tiles + y * BLOCK_WIDTH)[x]) {
+                left_x = x;
+
+                break;
+            }
+        }
+
+        if (left_x >= 0) {
+            const int8_t real_x = block->x + left_x;
+            const int8_t real_y = block->y + y;
+
+            if (real_x <= 0
+                || (screen_buffer[real_y] & (1 << (real_x - 1))) > 0) {
+                return false;
+            }
+        }
+    }
+
+    return true;
 }
 
 bool is_passable_right(const uint8_t* screen_buffer, const block_t* block)
 {
-    return false;
+    const uint8_t* const p_block_tiles = block->tile_of_zero_angle + (block->angle * BLOCK_WIDTH * BLOCK_HEIGHT);
+
+    for (int8_t y = 0; y < BLOCK_HEIGHT; ++y) {
+        int8_t right_x = -1;
+
+        for (int8_t x = BLOCK_WIDTH - 1; x >= 0; --x) {
+            if (1 == (p_block_tiles + y * BLOCK_WIDTH)[x]) {
+                right_x = x;
+
+                break;
+            }
+        }
+
+        if (right_x >= 0) {
+            const int8_t real_x = block->x + right_x;
+            const int8_t real_y = block->y + y;
+
+            if (real_x >= SCREEN_WIDTH - 1
+                || (screen_buffer[real_y] & (1 << (real_x + 1))) > 0) {
+                return false;
+            }
+        }
+    }
+
+    return true;
 }
 
 bool is_rotatable_clockwise(const uint8_t* screen_buffer, const block_t* block)
 {
-    return false;
+    const angle_t next_angle = (block->angle + 1) % ANGLE_SIZE;
+    const uint8_t* const p_block_tiles = block->tile_of_zero_angle + (next_angle * BLOCK_WIDTH * BLOCK_HEIGHT);
+    
+    for (int8_t y = 0; y < BLOCK_HEIGHT; ++y) {
+        if (block->y + y >= 0) {
+            for (int8_t x = 0; x < BLOCK_WIDTH; ++x) {
+                if ((p_block_tiles + y * BLOCK_WIDTH)[x] > 0
+                    && (screen_buffer[block->y + y] & (1 << (block->x + x))) > 0) {
+
+                    return false;
+                }
+            }
+        }
+    }
+    
+    return true;
+}
+
+bool is_rotatable_anti_clockwise(const uint8_t* screen_buffer, const block_t* block)
+{
+    const angle_t next_angle = (block->angle - 1 + ANGLE_SIZE) % ANGLE_SIZE;
+    const uint8_t* const p_block_tiles = block->tile_of_zero_angle + (block->angle * BLOCK_WIDTH * BLOCK_HEIGHT);
+    
+    for (int8_t y = 0; y < BLOCK_HEIGHT; ++y) {
+        if (block->y + y >= 0) {
+            for (int8_t x = 0; x < BLOCK_WIDTH; ++x) {
+                if ((p_block_tiles + y * BLOCK_WIDTH)[x] > 0
+                    && (screen_buffer[block->y + y] & (1 << (block->x + x))) > 0) {
+
+                    return false;
+                }
+            }
+        }
+    }
+
+    return true;
 }

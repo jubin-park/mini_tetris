@@ -17,6 +17,7 @@ typedef enum {
     ANGLE_90,
     ANGLE_180,
     ANGLE_270,
+    
     /* SIZE */
     ANGLE_SIZE
 } angle_t;
@@ -32,5 +33,6 @@ bool is_passable_down(const uint8_t* screen_buffer, const block_t* block);
 bool is_passable_left(const uint8_t* screen_buffer, const block_t* block);
 bool is_passable_right(const uint8_t* screen_buffer, const block_t* block);
 bool is_rotatable_clockwise(const uint8_t* screen_buffer, const block_t* block);
+bool is_rotatable_anti_clockwise(const uint8_t* screen_buffer, const block_t* block);
 
 #endif /* BLOCK_H */

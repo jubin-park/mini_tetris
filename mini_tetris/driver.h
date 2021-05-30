@@ -22,6 +22,7 @@ typedef enum {
     DRIVER_LCD_TEXT,
     DRIVER_BUZZER,
     DRIVER_PUSH_SWITCH,
+    
     /* SIZE */
     DRIVER_SIZE
 } driver_t;
