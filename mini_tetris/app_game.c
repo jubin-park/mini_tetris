@@ -61,6 +61,8 @@ old_screen_buffer[SCREEN_HEIGHT - 2] = 0x6f;
 
     while (g_is_game_running) {
 
+        bool redraw = false;
+
         {// get switch key state
             if (read(get_driver_file_descriptor(DRIVER_PUSH_SWITCH), g_now_switch_states, sizeof(g_now_switch_states)) < 0) {
                 fprintf(stderr, "Failed to read switch key\n");
@@ -73,26 +75,63 @@ old_screen_buffer[SCREEN_HEIGHT - 2] = 0x6f;
             }
             if (is_switch_key_triggered(SWITCH_KEY_DOWN)) {
                 puts("DOWN");
+                while (is_passable_down(old_screen_buffer, &now_block)) {
+                    ++now_block.y;
+                    redraw = true;
+                }
             }
             if (is_switch_key_triggered(SWITCH_KEY_LEFT)) {
-                if (is_passable_left(old_screen_buffer, &now_block)) {
-                    --now_block.x;
-                }
                 puts("LEFT");
+                if (is_passable_left(old_screen_buffer, &now_block)) {
+                    ++now_block.x;
+                    redraw = true;
+                }
             }
             else if (is_switch_key_triggered(SWITCH_KEY_RIGHT)) {
                 puts("RIGHT");
                 if (is_passable_right(old_screen_buffer, &now_block)) {
-                    ++now_block.x;
+                    --now_block.x;
+                    redraw = true;
                 }
             }
             if (is_switch_key_triggered(SWITCH_KEY_OK_OR_ROTATE)) {
+                puts("ROTATE");
                 if (is_rotatable_clockwise(old_screen_buffer, &now_block)) {
                     now_block.angle = (now_block.angle + 1) % ANGLE_SIZE;
+                    redraw = true;
                 }
             }
 
             memcpy(g_old_switch_states, g_now_switch_states, sizeof(g_now_switch_states));
+        }
+
+        if (redraw) {
+            printf("x: %2d\ty: %2d\n", now_block.x, now_block.y);
+
+            uint8_t new_screen_buffer[SCREEN_HEIGHT];
+            memcpy(new_screen_buffer, old_screen_buffer, SCREEN_HEIGHT * sizeof(uint8_t));
+
+            const uint8_t* p_block_tiles = now_block.tile_of_zero_angle + (now_block.angle * BLOCK_WIDTH * BLOCK_HEIGHT);
+
+            // draw block on new_screen_buffer
+            for (int i = 0; i < BLOCK_HEIGHT; ++i) {
+                if (now_block.y + i >= 0 && now_block.y + i < SCREEN_HEIGHT) {
+                    uint8_t line = (p_block_tiles + i * BLOCK_WIDTH)[2] << 2 | (p_block_tiles + i * BLOCK_WIDTH)[1] << 1 | (p_block_tiles + i * BLOCK_WIDTH)[0];
+                    if (now_block.x >= 0) {
+                        line <<= now_block.x;
+                    } else {
+                        line <<= (-now_block.x);
+                    }
+                    new_screen_buffer[now_block.y + i] |= line;
+                }
+            }
+
+            // real drawing
+            if (write(get_driver_file_descriptor(DRIVER_DOT_MATRIX), new_screen_buffer, SCREEN_HEIGHT * sizeof(uint8_t)) < 0) {
+                fprintf(stderr, "write() error\n");
+                
+                goto lb_exit;
+            }
         }
 
         // draw new_screen_buffer
@@ -101,15 +140,23 @@ old_screen_buffer[SCREEN_HEIGHT - 2] = 0x6f;
             memcpy(new_screen_buffer, old_screen_buffer, SCREEN_HEIGHT * sizeof(uint8_t));
 
             const uint8_t* p_block_tiles = now_block.tile_of_zero_angle + (now_block.angle * BLOCK_WIDTH * BLOCK_HEIGHT);
-            printf("block #%d\tangle: %3d\tframe: %6d\n",
+            printf("block #%d\tx: %2d y: %2d\tangle: %3d\tframe: %6d\n",
                 (now_block.tile_of_zero_angle - BLOCK_TILES[0]) / (BLOCK_HEIGHT * ANGLE_SIZE * BLOCK_WIDTH),
+                now_block.x,
+                now_block.y,
                 now_block.angle * 90,
                 frame_count);
 
             // draw block on new_screen_buffer
             for (int i = 0; i < BLOCK_HEIGHT; ++i) {
                 if (now_block.y + i >= 0 && now_block.y + i < SCREEN_HEIGHT) {
-                    new_screen_buffer[now_block.y + i] |= ((p_block_tiles + i * BLOCK_WIDTH)[2] << 2 | (p_block_tiles + i * BLOCK_WIDTH)[1] << 1 | (p_block_tiles + i * BLOCK_WIDTH)[0]) << now_block.x;    
+                    uint8_t line = (p_block_tiles + i * BLOCK_WIDTH)[2] << 2 | (p_block_tiles + i * BLOCK_WIDTH)[1] << 1 | (p_block_tiles + i * BLOCK_WIDTH)[0];
+                    if (now_block.x >= 0) {
+                        line <<= now_block.x;
+                    } else {
+                        line <<= (-now_block.x);
+                    }
+                    new_screen_buffer[now_block.y + i] |= line;
                 }
             }
 
@@ -157,6 +204,13 @@ old_screen_buffer[SCREEN_HEIGHT - 2] = 0x6f;
                     g_score += removed_height * DEFAULT_SCORE;
 
                     update_score_text(g_score);
+
+                    // real drawing
+                    if (write(get_driver_file_descriptor(DRIVER_DOT_MATRIX), new_screen_buffer, SCREEN_HEIGHT * sizeof(uint8_t)) < 0) {
+                        fprintf(stderr, "write() error\n");
+                        
+                        goto lb_exit;
+                    }
                 }
 
                 memcpy(old_screen_buffer, new_screen_buffer, SCREEN_HEIGHT * sizeof(uint8_t));
