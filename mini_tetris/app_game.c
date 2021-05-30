@@ -120,7 +120,7 @@ old_screen_buffer[SCREEN_HEIGHT - 2] = 0x77;
                 goto lb_exit;
             }
 
-            if (is_collision_occured(new_screen_buffer, &now_block)) {
+            if (!is_passable_down(new_screen_buffer, &now_block)) {
                 printf("collision occured\n");
 
                 now_block.x = 0;

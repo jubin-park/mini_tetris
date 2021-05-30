@@ -71,7 +71,7 @@ const uint8_t BLOCK_TILES[BLOCK_COUNT * BLOCK_HEIGHT * ANGLE_SIZE][BLOCK_WIDTH] 
     {0, 1, 0},
 };
 
-bool is_collision_occured(const uint8_t* screen_buffer, const block_t* block)
+bool is_passable_down(const uint8_t* screen_buffer, const block_t* block)
 {
     const uint8_t* const p_block_tiles = block->tile_of_zero_angle + (block->angle * BLOCK_WIDTH * BLOCK_HEIGHT);
 
@@ -81,7 +81,7 @@ bool is_collision_occured(const uint8_t* screen_buffer, const block_t* block)
             if (1 == (p_block_tiles + y * BLOCK_WIDTH)[x]) {
                 bottom_y = y;
 
-                break;                
+                break;
             }
         }
 
@@ -90,10 +90,25 @@ bool is_collision_occured(const uint8_t* screen_buffer, const block_t* block)
             const int8_t real_y = block->y + bottom_y;
 
             if (real_y >= SCREEN_HEIGHT - 1 || (screen_buffer[real_y + 1] & (1 << real_x))) {
-                return true;
+                return false;
             }
         }
     }
 
+    return true;
+}
+
+bool is_passable_left(const uint8_t* screen_buffer, const block_t* block)
+{
+    return false;
+}
+
+bool is_passable_right(const uint8_t* screen_buffer, const block_t* block)
+{
+    return false;
+}
+
+bool is_rotatable_clockwise(const uint8_t* screen_buffer, const block_t* block)
+{
     return false;
 }
