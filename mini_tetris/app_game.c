@@ -230,6 +230,8 @@ lb_exit:
     clear_drivers();
     close_drivers();
 
+    puts("!!!!!!!!!");
+
     return 0;
 }
 
