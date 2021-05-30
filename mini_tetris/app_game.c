@@ -170,6 +170,11 @@ old_screen_buffer[SCREEN_HEIGHT - 2] = 0x6f;
             if (!is_passable_down(new_screen_buffer, &now_block)) {
                 printf("collision occured\n");
 
+                if ((new_screen_buffer[0] & 0x7f) > 0) {
+                    puts("== GAME OVER ==");
+                    goto lb_exit;
+                }
+
                 now_block.x = 0;
                 now_block.y = -3;
                 now_block.angle = random() % ANGLE_SIZE;
@@ -211,10 +216,6 @@ old_screen_buffer[SCREEN_HEIGHT - 2] = 0x6f;
                         
                         goto lb_exit;
                     }
-                }
-                else if ((new_screen_buffer[0] & 0x7f) > 0) {
-                    puts("== GAME OVER ==");
-                    goto lb_exit;
                 }
 
                 memcpy(old_screen_buffer, new_screen_buffer, SCREEN_HEIGHT * sizeof(uint8_t));
