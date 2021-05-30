@@ -75,17 +75,15 @@ old_screen_buffer[SCREEN_HEIGHT - 2] = 0x77;
                 puts("DOWN");
             }
             if (is_switch_key_triggered(SWITCH_KEY_LEFT)) {
-                puts("LEFT");
-                --now_block.x;
-                if (now_block.x < 0) {
-                    now_block.x = 0;
+                if (is_passable_left(old_screen_buffer, &now_block)) {
+                    --now_block.x;
                 }
+                puts("LEFT");
             }
             else if (is_switch_key_triggered(SWITCH_KEY_RIGHT)) {
                 puts("RIGHT");
-                ++now_block.x;
-                if (now_block.x + BLOCK_WIDTH >= SCREEN_WIDTH) {
-                    now_block.x = SCREEN_WIDTH - BLOCK_WIDTH;
+                if (is_passable_right(old_screen_buffer, &now_block)) {
+                    ++now_block.x;
                 }
             }
             if (is_switch_key_triggered(SWITCH_KEY_OK_OR_ROTATE)) {

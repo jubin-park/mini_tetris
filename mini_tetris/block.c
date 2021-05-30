@@ -185,7 +185,7 @@ bool is_rotatable_clockwise(const uint8_t* screen_buffer, const block_t* block)
 bool is_rotatable_anti_clockwise(const uint8_t* screen_buffer, const block_t* block)
 {
     const angle_t next_angle = (block->angle - 1 + ANGLE_SIZE) % ANGLE_SIZE;
-    const uint8_t* const p_block_tiles = block->tile_of_zero_angle + (block->angle * BLOCK_WIDTH * BLOCK_HEIGHT);
+    const uint8_t* const p_block_tiles = block->tile_of_zero_angle + (next_angle * BLOCK_WIDTH * BLOCK_HEIGHT);
     
     for (int8_t y = 0; y < BLOCK_HEIGHT; ++y) {
         if (block->y + y >= 0) {
