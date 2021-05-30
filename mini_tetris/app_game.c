@@ -105,7 +105,7 @@ old_screen_buffer[SCREEN_HEIGHT - 2] = 0x6f;
             memcpy(g_old_switch_states, g_now_switch_states, sizeof(g_now_switch_states));
         }
 
-        if (redraw) {
+        if (redraw) { // redraw when block moved or rotated
             printf("x: %2d\ty: %2d\n", now_block.x, now_block.y);
 
             uint8_t new_screen_buffer[SCREEN_HEIGHT];
@@ -134,7 +134,7 @@ old_screen_buffer[SCREEN_HEIGHT - 2] = 0x6f;
             }
         }
 
-        // draw new_screen_buffer
+        // draw new_screen_buffer per a frame
         if (0 == frame_count % DRAWING_DELAY_FRAME_COUNT) {
             uint8_t new_screen_buffer[SCREEN_HEIGHT];
             memcpy(new_screen_buffer, old_screen_buffer, SCREEN_HEIGHT * sizeof(uint8_t));
@@ -205,12 +205,16 @@ old_screen_buffer[SCREEN_HEIGHT - 2] = 0x6f;
 
                     update_score_text(g_score);
 
-                    // real drawing
+                    // when line is removed, redraw again
                     if (write(get_driver_file_descriptor(DRIVER_DOT_MATRIX), new_screen_buffer, SCREEN_HEIGHT * sizeof(uint8_t)) < 0) {
                         fprintf(stderr, "write() error\n");
                         
                         goto lb_exit;
                     }
+                }
+                else if ((new_screen_buffer[0] & 0x7f) > 0) {
+                    puts("== GAME OVER ==");
+                    goto lb_exit;
                 }
 
                 memcpy(old_screen_buffer, new_screen_buffer, SCREEN_HEIGHT * sizeof(uint8_t));
@@ -230,7 +234,7 @@ lb_exit:
     clear_drivers();
     close_drivers();
 
-    puts("!!!!!!!!!");
+    puts("Bye bye ...");
 
     return 0;
 }
