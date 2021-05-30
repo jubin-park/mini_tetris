@@ -87,7 +87,9 @@ old_screen_buffer[SCREEN_HEIGHT - 2] = 0x6f;
                 }
             }
             if (is_switch_key_triggered(SWITCH_KEY_OK_OR_ROTATE)) {
-                puts("OK");
+                if (is_rotatable_clockwise(old_screen_buffer, &now_block)) {
+                    now_block.angle = (now_block.angle + 1) % ANGLE_SIZE;
+                }
             }
 
             memcpy(g_old_switch_states, g_now_switch_states, sizeof(g_now_switch_states));
