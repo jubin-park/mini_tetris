@@ -37,7 +37,7 @@ int main(void)
         goto lb_exit;
     }
 
-    //clear_drivers();
+    clear_drivers();
 
     (void)signal(SIGINT, signal_exit);
     srandom((unsigned int)time(NULL));
@@ -227,7 +227,7 @@ old_screen_buffer[SCREEN_HEIGHT - 2] = 0x6f;
     }
 
 lb_exit:
-    //clear_drivers();
+    clear_drivers();
     close_drivers();
 
     return 0;

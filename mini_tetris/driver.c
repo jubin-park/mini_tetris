@@ -18,7 +18,7 @@ static const uint8_t DRIVER_DATA_LENGTHS[DRIVER_SIZE] = {
     LED_DATA_LENGTH,
     SEVEN_SEGMENT_DATA_LENGTH,
     DOT_MATRIX_DATA_LENGTH,
-    LCD_TEXT_DATA_LENGTH,
+    LCD_TEXT_DATA_LENGTH, // CRASH
     BUZZER_DATA_LENGTH,
     PUSH_SWITCH_DATA_LENGTH
 };
@@ -59,12 +59,15 @@ void close_drivers(void)
 void clear_drivers(void)
 {
     uint8_t zeros[32] = { 0 };
+    write(s_driver_file_descriptors[DRIVER_LED], zeros, DRIVER_DATA_LENGTHS[DRIVER_LED]);
+    write(s_driver_file_descriptors[DRIVER_SEVEN_SEGMENT], zeros, DRIVER_DATA_LENGTHS[DRIVER_SEVEN_SEGMENT]);
+    write(s_driver_file_descriptors[DRIVER_DOT_MATRIX], zeros, DRIVER_DATA_LENGTHS[DRIVER_DOT_MATRIX]);
+    write(s_driver_file_descriptors[DRIVER_BUZZER], zeros, DRIVER_DATA_LENGTHS[DRIVER_BUZZER]);
+    write(s_driver_file_descriptors[DRIVER_PUSH_SWITCH], zeros, DRIVER_DATA_LENGTHS[DRIVER_PUSH_SWITCH]);
 
-    for (size_t i = 0; i < DRIVER_SIZE; ++i) {
-        if (s_driver_file_descriptors[i] >= 0) {
-            write(s_driver_file_descriptors[i], zeros, DRIVER_DATA_LENGTHS[i]);
-        }
-    }
+    //uint8_t blanks[LCD_TEXT_DATA_LENGTH];
+    //memset(blanks, ' ', DRIVER_DATA_LENGTHS[DRIVER_LCD_TEXT]);
+    //write(s_driver_file_descriptors[DRIVER_LCD_TEXT], blanks, DRIVER_DATA_LENGTHS[DRIVER_LCD_TEXT]);
 }
 
 void update_score_text(const uint32_t original_score)
