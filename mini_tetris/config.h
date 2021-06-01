@@ -9,7 +9,12 @@ enum {
 
     DEFAULT_SCORE = 10,
 
-    DRAWING_DELAY_FRAME_COUNT = 10,
+    MAX_LEVEL = 5
 };
+
+static const uint32_t FRAME_PER_LEVEL_UPS[1 + MAX_LEVEL + 1] = { 0, 300, 560, 780, 900, 1060, UINT32_MAX };
+static const uint8_t DELAY_PER_LEVELS[1 + MAX_LEVEL + 1] = { 10 /* lower bound */,
+                                                             10, 9, 8, 6, 4,
+                                                             4 /* upper bound */ };
 
 #endif /* CONFIG_H */

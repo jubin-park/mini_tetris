@@ -26,12 +26,15 @@ extern uint8_t g_now_switch_states[SWITCH_KEY_SIZE];
 extern uint8_t g_old_switch_states[SWITCH_KEY_SIZE];
 
 static bool s_is_game_running = true;
+
 static uint32_t s_score;
 static uint32_t s_frame_count;
-static scene_t s_now_scene = SCENE_INTRO;
 
 static uint8_t s_old_screen_buffer[SCREEN_HEIGHT];
+static scene_t s_now_scene = SCENE_INTRO;
 static block_t s_now_block;
+
+static uint8_t s_level;
 
 void signal_exit(int sig);
 void print_matrix(const uint8_t* screen_buffer);
@@ -163,6 +166,14 @@ void update_scene_intro(void)
 
 void update_scene_game(void)
 {
+    // level up
+    for (int i = MAX_LEVEL; i >= 0; ++i) {
+        if (s_frame_count >= FRAME_PER_LEVEL_UPS[i] && s_frame_count < FRAME_PER_LEVEL_UPS[i + 1]) {
+            s_level = i;
+            break;
+        }
+    }
+
     bool is_redrawing_needed = false;
 
     {// get switch key state
@@ -250,17 +261,18 @@ void update_scene_game(void)
     }
 
     // draw new_screen_buffer per a frame
-    if (1 == s_frame_count % DRAWING_DELAY_FRAME_COUNT) {
+    if (1 == s_frame_count % DELAY_PER_LEVELS[s_level]) {
         uint8_t new_screen_buffer[SCREEN_HEIGHT];
         memcpy(new_screen_buffer, s_old_screen_buffer, SCREEN_HEIGHT * sizeof(uint8_t));
 
         const uint8_t* p_block_tiles = s_now_block.tile_of_zero_angle + (s_now_block.angle * BLOCK_WIDTH * BLOCK_HEIGHT);
-        printf("block #%d\tx: %2d y: %2d\tangle: %3d\tframe: %6d\n",
+        printf("block #%d\tx: %2d y: %2d\tangle: %3d\tframe: %6d\tlevel: %d\n",
             (s_now_block.tile_of_zero_angle - BLOCK_TILES[0]) / (BLOCK_HEIGHT * ANGLE_SIZE * BLOCK_WIDTH),
             s_now_block.x,
             s_now_block.y,
             s_now_block.angle * 90,
-            s_frame_count);
+            s_frame_count
+            s_level);
 
         // draw block on new_screen_buffer
         for (int y = 0; y < BLOCK_HEIGHT; ++y) {
