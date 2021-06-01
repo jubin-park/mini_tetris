@@ -260,10 +260,22 @@ block_t generate_block(void)
 {
     block_t block;
 
-    block.x = 0;
-    block.y = -3;
     block.angle = random() % ANGLE_SIZE;
-    block.tile_of_zero_angle = BLOCK_TILES[(3 /*random() % BLOCK_COUNT*/ ) * BLOCK_HEIGHT * ANGLE_SIZE];
+    block.tile_of_zero_angle = BLOCK_TILES[(random() % BLOCK_COUNT) * BLOCK_HEIGHT * ANGLE_SIZE];
+
+    int8_t real_height = 0;
+    for (int8_t y = 0; y < BLOCK_HEIGHT; ++y) {
+        for (int8_t x = 0; x < BLOCK_WIDTH; ++x) {
+            if (1 == (p_block_tiles + y * BLOCK_WIDTH)[x]) {
+                ++real_height;
+
+                break;
+            }
+        }
+    }
+
+    block.x = 0;
+    block.y = (-real_height);
 
     return block;
 }
