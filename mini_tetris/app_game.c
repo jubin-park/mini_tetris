@@ -133,7 +133,7 @@ void update_scene_intro(void)
         if (read(get_driver_file_descriptor(DRIVER_PUSH_SWITCH), g_now_switch_states, sizeof(g_now_switch_states)) < 0) {
             fprintf(stderr, "Failed to read switch key\n");
 
-            goto lb_exit;
+            return;
         }
 
         if (is_switch_key_triggered(SWITCH_KEY_OK_OR_ROTATE)) {
@@ -145,7 +145,7 @@ void update_scene_intro(void)
 
         memcpy(g_old_switch_states, g_now_switch_states, sizeof(g_now_switch_states));
 
-        
+
     }
 }
 
