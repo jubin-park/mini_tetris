@@ -128,7 +128,7 @@ void update_scene_intro(void)
     if (0 == s_frame_count % 5) {
         write(get_driver_file_descriptor(DRIVER_DOT_MATRIX), test_data[s_frame], SCREEN_HEIGHT * sizeof(uint8_t));
 
-        s_frame = (s_frame + 1) %= TEST_FRAME_COUNT;
+        s_frame = (s_frame + 1) % TEST_FRAME_COUNT;
     }
 }
 
