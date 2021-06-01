@@ -33,6 +33,7 @@ static uint32_t s_frame_count;
 static uint8_t s_old_screen_buffer[SCREEN_HEIGHT];
 static scene_t s_now_scene = SCENE_INTRO;
 static block_t s_now_block;
+static uint8_t s_lamp_index;
 
 static uint8_t s_level;
 
@@ -262,7 +263,8 @@ void update_scene_game(void)
 
     // draw new_screen_buffer per a frame
     if (1 == s_frame_count % DELAY_PER_LEVELS[s_level]) {
-        update_led_lamp(s_frame_count % 4);
+        update_led_lamp(s_lamp_index);
+        s_lamp_index = (s_lamp_index + 1) % 4;
 
         uint8_t new_screen_buffer[SCREEN_HEIGHT];
         memcpy(new_screen_buffer, s_old_screen_buffer, SCREEN_HEIGHT * sizeof(uint8_t));
@@ -381,6 +383,7 @@ void update_scene_pause(void)
             s_now_scene = SCENE_INTRO;
             s_frame_count = 0;
             s_scene_frame_count = 0;
+            s_lamp_index = 0;   
         }
         else if (is_switch_key_triggered(SWITCH_KEY_0)
                     || is_switch_key_triggered(SWITCH_KEY_2)
@@ -417,6 +420,7 @@ void update_scene_gameover(void)
             s_frame_count = 0;
             s_scene_frame_count = 0;
             s_score = 0;
+            s_lamp_index = 0;
             
             memset(s_old_screen_buffer, 0x0, SCREEN_HEIGHT * sizeof(uint8_t));
             clear_drivers();
