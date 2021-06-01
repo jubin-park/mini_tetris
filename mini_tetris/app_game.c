@@ -261,7 +261,7 @@ void update_scene_game(void)
     }
 
 
-    printf("%6d\t%6d\n", s_frame_count, s_frame_count % DELAY_PER_LEVELS[s_level]);
+    printf("%6d\t%6d\tdelay=%d\tlevel=%d\n", s_frame_count, s_frame_count % DELAY_PER_LEVELS[s_level], DELAY_PER_LEVELS[s_level], s_level);
 
     // draw new_screen_buffer per a frame
     if (1 == s_frame_count % DELAY_PER_LEVELS[s_level]) {
