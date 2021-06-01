@@ -167,7 +167,7 @@ void update_scene_intro(void)
 void update_scene_game(void)
 {
     // level up
-    for (int i = MAX_LEVEL; i >= 0; ++i) {
+    for (int i = MAX_LEVEL; i >= 0; --i) {
         if (s_frame_count >= FRAME_PER_LEVEL_UPS[i] && s_frame_count < FRAME_PER_LEVEL_UPS[i + 1]) {
             s_level = i;
             break;
