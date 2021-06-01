@@ -29,6 +29,7 @@ uint32_t g_score;
 void signal_exit(int sig);
 void display_matrix(const uint8_t* screen_buffer);
 bool render_matrix(const uint8_t* screen_buffer);
+block_t generate_block(void);
 
 int main(void)
 {
@@ -42,12 +43,7 @@ int main(void)
     (void)signal(SIGINT, signal_exit);
     srandom((unsigned int)time(NULL));
 
-    block_t now_block = {
-        .x = 0,
-        .y = -3,
-        .angle = random() % ANGLE_SIZE,
-        .tile_of_zero_angle = BLOCK_TILES[(random() % BLOCK_COUNT) * BLOCK_HEIGHT * ANGLE_SIZE]
-    };
+    block_t now_block = generate_block();
     
     uint32_t frame_count = 0;
     uint8_t old_screen_buffer[SCREEN_HEIGHT] = { 0 };
@@ -112,15 +108,15 @@ int main(void)
             const uint8_t* p_block_tiles = now_block.tile_of_zero_angle + (now_block.angle * BLOCK_WIDTH * BLOCK_HEIGHT);
 
             // draw block on new_screen_buffer
-            for (int i = 0; i < BLOCK_HEIGHT; ++i) {
-                if (now_block.y + i >= 0 && now_block.y + i < SCREEN_HEIGHT) {
-                    uint8_t line = (p_block_tiles + i * BLOCK_WIDTH)[2] << 2 | (p_block_tiles + i * BLOCK_WIDTH)[1] << 1 | (p_block_tiles + i * BLOCK_WIDTH)[0];
+            for (int y = 0; y < BLOCK_HEIGHT; ++y) {
+                if (now_block.y + y >= 0 && now_block.y + y < SCREEN_HEIGHT) {
+                    uint8_t line = (p_block_tiles + y * BLOCK_WIDTH)[2] << 2 | (p_block_tiles + y * BLOCK_WIDTH)[1] << 1 | (p_block_tiles + y * BLOCK_WIDTH)[0];
                     if (now_block.x >= 0) {
                         line <<= now_block.x;
                     } else {
                         line <<= (-now_block.x);
                     }
-                    new_screen_buffer[now_block.y + i] |= line;
+                    new_screen_buffer[now_block.y + y] |= line;
                 }
             }
 
@@ -142,15 +138,15 @@ int main(void)
                 frame_count);
 
             // draw block on new_screen_buffer
-            for (int i = 0; i < BLOCK_HEIGHT; ++i) {
-                if (now_block.y + i >= 0 && now_block.y + i < SCREEN_HEIGHT) {
-                    uint8_t line = (p_block_tiles + i * BLOCK_WIDTH)[2] << 2 | (p_block_tiles + i * BLOCK_WIDTH)[1] << 1 | (p_block_tiles + i * BLOCK_WIDTH)[0];
+            for (int y = 0; y < BLOCK_HEIGHT; ++y) {
+                if (now_block.y + y >= 0 && now_block.y + y < SCREEN_HEIGHT) {
+                    uint8_t line = (p_block_tiles + y * BLOCK_WIDTH)[2] << 2 | (p_block_tiles + y * BLOCK_WIDTH)[1] << 1 | (p_block_tiles + y * BLOCK_WIDTH)[0];
                     if (now_block.x >= 0) {
                         line <<= now_block.x;
                     } else {
                         line <<= (-now_block.x);
                     }
-                    new_screen_buffer[now_block.y + i] |= line;
+                    new_screen_buffer[now_block.y + y] |= line;
                 }
             }
 
@@ -165,10 +161,7 @@ int main(void)
                     goto lb_exit;
                 }
 
-                now_block.x = 0;
-                now_block.y = -3;
-                now_block.angle = random() % ANGLE_SIZE;
-                now_block.tile_of_zero_angle = BLOCK_TILES[(random() % BLOCK_COUNT) * BLOCK_HEIGHT * ANGLE_SIZE];
+                now_block = generate_block();
 
                 int8_t removed_height = 0;
                 
@@ -179,8 +172,8 @@ int main(void)
                         if ((new_screen_buffer[h] & 0xff) == 0x7f) {
                             ++removed_height;
                             
-                            for (int8_t i = h; i >= 1; --i) {
-                                new_screen_buffer[i] = new_screen_buffer[i - 1];
+                            for (int8_t y = h; y >= 1; --y) {
+                                new_screen_buffer[y] = new_screen_buffer[y - 1];
                             }
 
                             is_line_found = true;
@@ -246,9 +239,9 @@ bool render_matrix(const uint8_t* screen_buffer)
 {
     uint8_t flip_buffer[SCREEN_HEIGHT];
     
-    for (int i = 0; i < SCREEN_HEIGHT; ++i) {
-        const uint8_t bits = screen_buffer[i];
-        flip_buffer[i] = (bits & 1) << 6 | (bits & 64) >> 6
+    for (int y = 0; y < SCREEN_HEIGHT; ++y) {
+        const uint8_t bits = screen_buffer[y];
+        flip_buffer[y] = (bits & 1) << 6 | (bits & 64) >> 6
                         | (bits & 2) << 4 | (bits & 32) >> 4
                         | (bits & 4) << 2 | (bits & 16) >> 2
                         | (bits & 8);
@@ -261,4 +254,16 @@ bool render_matrix(const uint8_t* screen_buffer)
     }
 
     return true;
+}
+
+block_t generate_block(void)
+{
+    block_t block;
+
+    block.x = 0;
+    block.y = -3;
+    block.angle = random() % ANGLE_SIZE;
+    block.tile_of_zero_angle = BLOCK_TILES[(3 /*random() % BLOCK_COUNT*/ ) * BLOCK_HEIGHT * ANGLE_SIZE];
+
+    return block;
 }
