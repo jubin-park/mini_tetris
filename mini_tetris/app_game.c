@@ -16,7 +16,7 @@
 #include "driver.h"
 #include "scene.h"
 #include "switch_key.h"
-#include "dot10x7/font.h"
+#include "dot10x7/test.h"
 #include "dot10x7/full.h"
 
 extern const uint8_t BLOCK_TILES[BLOCK_COUNT * BLOCK_HEIGHT * ANGLE_SIZE][BLOCK_WIDTH];
@@ -91,7 +91,7 @@ lb_exit:
 
 void signal_exit(int sig)
 {
-    printf("<Exit Game>\tsig: %d\n", sig);
+    printf("\n<Exit Game>\tsig: %d\n", sig);
     s_is_game_running = false;
 }
 
@@ -123,7 +123,13 @@ bool render_matrix_to_device(const uint8_t* screen_buffer)
 
 void update_scene_intro(void)
 {
+    int frame = 0;
 
+    if (0 == s_frame_count % 5) {
+        write(get_driver_file_descriptor(DRIVER_DOT_MATRIX), test_data[frame], SCREEN_HEIGHT * sizeof(uint8_t));
+        
+        frame = (frame + 1) % TEST_FRAME_COUNT;
+    }
 }
 
 void update_scene_game(void)
@@ -146,7 +152,7 @@ void update_scene_game(void)
             puts("DOWN");
             while (is_passable_down(old_screen_buffer, &now_block)) {
                 ++now_block.y;
-                
+
                 is_redrawing_needed = true;
             }
         }
