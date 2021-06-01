@@ -91,7 +91,7 @@ block_t generate_random_block(void)
         }
     }
 
-    block.x = 0;
+    block.x = 2;
     block.y = (-real_height);
 
     return block;
