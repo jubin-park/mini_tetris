@@ -246,9 +246,23 @@ void signal_exit(int sig)
 void display_matrix(const uint8_t* screen_buffer)
 {
     for (int8_t y = 0; y < SCREEN_HEIGHT; ++y) {
-        for (int8_t x = SCREEN_WIDTH - 1; x >= 0; --x) {
+        for (int8_t x = 0; x < SCREEN_WIDTH; ++x) {
             putchar(((1 << x) & screen_buffer[y]) ? '*' : '.');
         }
         putchar('\n');
     }
 }
+/*
+bool render_matrix(const uint8_t* screen_bufer)
+{
+    uint8_t flip_buffer[SCREEN_HEIGHT];
+
+
+
+    if (write(get_driver_file_descriptor(DRIVER_DOT_MATRIX), screen_buffer, SCREEN_HEIGHT * sizeof(uint8_t)) < 0) {
+        fprintf(stderr, "write() error\n");
+        
+        goto lb_exit;
+    }
+}
+*/
