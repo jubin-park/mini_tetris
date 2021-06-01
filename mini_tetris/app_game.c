@@ -17,7 +17,7 @@
 #include "scene.h"
 #include "switch_key.h"
 #include "dot10x7/test.h"
-#include "dot10x7/full.h"
+#include "dot10x7/game_intro.h"
 
 extern const uint8_t BLOCK_TILES[BLOCK_COUNT * BLOCK_HEIGHT * ANGLE_SIZE][BLOCK_WIDTH];
 extern uint8_t g_score_text[SEVEN_SEGMENT_DATA_LENGTH];
@@ -126,9 +126,9 @@ void update_scene_intro(void)
     static int s_frame = 0;
 
     if (0 == s_frame_count % 5) {
-        write(get_driver_file_descriptor(DRIVER_DOT_MATRIX), test_data[s_frame], SCREEN_HEIGHT * sizeof(uint8_t));
+        write(get_driver_file_descriptor(DRIVER_DOT_MATRIX), game_intro_data[s_frame], SCREEN_HEIGHT * sizeof(uint8_t));
 
-        s_frame = (s_frame + 1) % TEST_FRAME_COUNT;
+        s_frame = (s_frame + 1) % GAME_INTRO_FRAME_COUNT;
     }
 }
 
