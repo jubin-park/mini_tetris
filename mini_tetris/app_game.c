@@ -63,9 +63,9 @@ int main(void)
         memset(data, ' ', LCD_TEXT_DATA_LENGTH);
 
         snprintf(data, LCD_TEXT_DATA_LENGTH >> 1, MESSAGE_PLAYING[0], 123);
-        data[strlen(data)] = '\0';
+        data[strlen(data)] = ' ';
         snprintf(data + (LCD_TEXT_DATA_LENGTH >> 1), LCD_TEXT_DATA_LENGTH >> 1, MESSAGE_PLAYING[1]);
-        data[strlen(data + (LCD_TEXT_DATA_LENGTH >> 1))] = '\0';
+        data[strlen(data + (LCD_TEXT_DATA_LENGTH >> 1))] = ' ';
 
         set_lcd_text_one_line(data);
     }
