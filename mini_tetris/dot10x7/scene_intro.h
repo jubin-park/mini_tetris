@@ -1,10 +1,10 @@
 #include <stdint.h>
 
-#define GAME_INTRO_FRAME_COUNT 123
+#define SCENE_INTRO_FRAME_COUNT 123
 
-/* Piskel data for "game_intro" */
+/* Piskel data for "scene_intro" */
 
-static const uint8_t game_intro_data[123][10] = {
+static const uint8_t scene_intro_data[123][10] = {
 {
 0x00,
 0x00,

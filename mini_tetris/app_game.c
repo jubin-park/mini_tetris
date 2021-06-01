@@ -17,7 +17,8 @@
 #include "scene.h"
 #include "switch_key.h"
 #include "dot10x7/test.h"
-#include "dot10x7/game_intro.h"
+#include "dot10x7/scene_intro.h"
+#include "dot10x7/scene_pause.h"
 
 extern const uint8_t BLOCK_TILES[BLOCK_COUNT * BLOCK_HEIGHT * ANGLE_SIZE][BLOCK_WIDTH];
 extern uint8_t g_score_text[SEVEN_SEGMENT_DATA_LENGTH];
@@ -37,6 +38,8 @@ void print_matrix(const uint8_t* screen_buffer);
 bool render_matrix_to_device(const uint8_t* screen_buffer);
 void update_scene_intro(void);
 void update_scene_game(void);
+void update_scene_pause(void);
+void update_scene_gameover(void);
 
 int main(void)
 {
@@ -76,7 +79,12 @@ int main(void)
                 update_scene_game();
                 break;
 
+            case SCENE_PAUSE:
+
+                break;
+
             case SCENE_GAME_OVER:
+
                 break;
 
             default:
@@ -129,10 +137,10 @@ bool render_matrix_to_device(const uint8_t* screen_buffer)
 
 void update_scene_intro(void)
 {
-    static int s_frame = 0;
+    static int s_scene_frame = 0;
 
-    write(get_driver_file_descriptor(DRIVER_DOT_MATRIX), game_intro_data[s_frame], SCREEN_HEIGHT * sizeof(uint8_t));
-    s_frame = (s_frame + 1) % GAME_INTRO_FRAME_COUNT;
+    write(get_driver_file_descriptor(DRIVER_DOT_MATRIX), scene_intro_data[s_scene_frame], SCREEN_HEIGHT * sizeof(uint8_t));
+    s_scene_frame = (s_scene_frame + 1) % SCENE_INTRO_FRAME_COUNT;
     
     {// get switch key state
         if (read(get_driver_file_descriptor(DRIVER_PUSH_SWITCH), g_now_switch_states, sizeof(g_now_switch_states)) < 0) {
@@ -146,11 +154,10 @@ void update_scene_intro(void)
             
             s_now_scene = SCENE_GAME;
             s_frame_count = 0;
+            s_scene_frame = 0;
         }
 
         memcpy(g_old_switch_states, g_now_switch_states, sizeof(g_now_switch_states));
-
-
     }
 }
 
@@ -199,6 +206,15 @@ void update_scene_game(void)
 
                 is_redrawing_needed = true;
             }
+        }
+        else if (is_switch_key_triggered(SWITCH_KEY_0)
+                    || is_switch_key_triggered(SWITCH_KEY_2)
+                    || is_switch_key_triggered(SWITCH_KEY_6)
+                    || is_switch_key_triggered(SWITCH_KEY_8)) {
+
+            s_now_scene = SCENE_PAUSE;
+
+            goto lb_exit;
         }
 
         memcpy(g_old_switch_states, g_now_switch_states, sizeof(g_now_switch_states));
@@ -325,4 +341,44 @@ void update_scene_game(void)
 
 lb_exit:
     return;
+}
+
+void update_scene_pause(void)
+{
+    static int s_scene_frame = 0;
+
+    write(get_driver_file_descriptor(DRIVER_DOT_MATRIX), scene_pause_data[s_scene_frame], SCREEN_HEIGHT * sizeof(uint8_t));
+    s_scene_frame = (s_scene_frame + 1) % SCENE_PAUSE_FRAME_COUNT;
+    
+    {// get switch key state
+        if (read(get_driver_file_descriptor(DRIVER_PUSH_SWITCH), g_now_switch_states, sizeof(g_now_switch_states)) < 0) {
+            fprintf(stderr, "Failed to read switch key\n");
+
+            return;
+        }
+
+        if (is_switch_key_triggered(SWITCH_KEY_OK_OR_ROTATE)) { // Goto Scene Intro
+            puts("RESUME");
+            
+            s_now_scene = SCENE_INTRO;
+            s_frame_count = 0;
+            s_scene_frame = 0;
+        }
+        else if (is_switch_key_triggered(SWITCH_KEY_0)
+                    || is_switch_key_triggered(SWITCH_KEY_2)
+                    || is_switch_key_triggered(SWITCH_KEY_6)
+                    || is_switch_key_triggered(SWITCH_KEY_8)) { // Resume
+
+            s_now_scene = SCENE_GAME;
+            s_frame_count = 0;
+            s_scene_frame = 0;
+        }
+
+        memcpy(g_old_switch_states, g_now_switch_states, sizeof(g_now_switch_states));
+    }
+}
+
+void update_scene_gameover(void)
+{
+
 }

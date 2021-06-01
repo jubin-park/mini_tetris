@@ -1,12 +1,12 @@
 #include <stdint.h>
 
-#define GAME_INTRO_FRAME_COUNT 123
-#define GAME_INTRO_FRAME_WIDTH 7
-#define GAME_INTRO_FRAME_HEIGHT 10
+#define SCENE_INTRO_FRAME_COUNT 123
+#define SCENE_INTRO_FRAME_WIDTH 7
+#define SCENE_INTRO_FRAME_HEIGHT 10
 
-/* Piskel data for "game_intro" */
+/* Piskel data for "scene_intro" */
 
-static const uint32_t game_intro_data[123][70] = {
+static const uint32_t scene_intro_data[123][70] = {
 {
 0xff000000, 0xff000000, 0xff000000, 0xff000000, 0xff000000, 0xff000000, 0xff000000, 
 0xff000000, 0xff000000, 0xff000000, 0xff000000, 0xff000000, 0xff000000, 0xff000000, 
