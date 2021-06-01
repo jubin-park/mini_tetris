@@ -29,6 +29,9 @@ static uint32_t s_score;
 static uint32_t s_frame_count;
 static scene_t s_now_scene = SCENE_INTRO;
 
+static uint8_t s_old_screen_buffer[SCREEN_HEIGHT];
+static block_t s_now_block;
+
 void signal_exit(int sig);
 void print_matrix(const uint8_t* screen_buffer);
 bool render_matrix_to_device(const uint8_t* screen_buffer);
@@ -57,6 +60,8 @@ int main(void)
         .tv_sec = 0,
         .tv_nsec = DELAY_NANOSEC_PER_FRAME
     };
+
+    s_now_block = generate_random_block();
 
     while (s_is_game_running) {
 
@@ -151,9 +156,7 @@ void update_scene_intro(void)
 
 void update_scene_game(void)
 {
-    static bool is_redrawing_needed = false;
-    static uint8_t old_screen_buffer[SCREEN_HEIGHT] = { 0 };
-    static block_t now_block = generate_random_block();
+    bool is_redrawing_needed = false;
 
     {// get switch key state
         if (read(get_driver_file_descriptor(DRIVER_PUSH_SWITCH), g_now_switch_states, sizeof(g_now_switch_states)) < 0) {
@@ -167,32 +170,32 @@ void update_scene_game(void)
         }
         else if (is_switch_key_triggered(SWITCH_KEY_DOWN)) {
             puts("DOWN");
-            while (is_passable_down(old_screen_buffer, &now_block)) {
-                ++now_block.y;
+            while (is_passable_down(s_old_screen_buffer, &s_now_block)) {
+                ++s_now_block.y;
 
                 is_redrawing_needed = true;
             }
         }
         else if (is_switch_key_triggered(SWITCH_KEY_LEFT)) {
             puts("LEFT");
-            if (is_passable_left(old_screen_buffer, &now_block)) {
-                --now_block.x;
+            if (is_passable_left(s_old_screen_buffer, &s_now_block)) {
+                --s_now_block.x;
 
                 is_redrawing_needed = true;
             }
         }
         else if (is_switch_key_triggered(SWITCH_KEY_RIGHT)) {
             puts("RIGHT");
-            if (is_passable_right(old_screen_buffer, &now_block)) {
-                ++now_block.x;
+            if (is_passable_right(s_old_screen_buffer, &s_now_block)) {
+                ++s_now_block.x;
 
                 is_redrawing_needed = true;
             }
         }
         else if (is_switch_key_triggered(SWITCH_KEY_OK_OR_ROTATE)) {
             puts("ROTATE");
-            if (is_rotatable_clockwise(old_screen_buffer, &now_block)) {
-                now_block.angle = (now_block.angle + 1) % ANGLE_SIZE;
+            if (is_rotatable_clockwise(s_old_screen_buffer, &s_now_block)) {
+                s_now_block.angle = (s_now_block.angle + 1) % ANGLE_SIZE;
 
                 is_redrawing_needed = true;
             }
@@ -202,23 +205,23 @@ void update_scene_game(void)
     }
 
     if (is_redrawing_needed) { // is_redrawing_needed when block moved or rotated
-        printf("x: %2d\ty: %2d\n", now_block.x, now_block.y);
+        printf("x: %2d\ty: %2d\n", s_now_block.x, s_now_block.y);
 
         uint8_t new_screen_buffer[SCREEN_HEIGHT];
-        memcpy(new_screen_buffer, old_screen_buffer, SCREEN_HEIGHT * sizeof(uint8_t));
+        memcpy(new_screen_buffer, s_old_screen_buffer, SCREEN_HEIGHT * sizeof(uint8_t));
 
-        const uint8_t* p_block_tiles = now_block.tile_of_zero_angle + (now_block.angle * BLOCK_WIDTH * BLOCK_HEIGHT);
+        const uint8_t* p_block_tiles = s_now_block.tile_of_zero_angle + (s_now_block.angle * BLOCK_WIDTH * BLOCK_HEIGHT);
 
         // draw block on new_screen_buffer
         for (int y = 0; y < BLOCK_HEIGHT; ++y) {
-            if (now_block.y + y >= 0 && now_block.y + y < SCREEN_HEIGHT) {
+            if (s_now_block.y + y >= 0 && s_now_block.y + y < SCREEN_HEIGHT) {
                 uint8_t line = (p_block_tiles + y * BLOCK_WIDTH)[2] << 2 | (p_block_tiles + y * BLOCK_WIDTH)[1] << 1 | (p_block_tiles + y * BLOCK_WIDTH)[0];
-                if (now_block.x >= 0) {
-                    line <<= now_block.x;
+                if (s_now_block.x >= 0) {
+                    line <<= s_now_block.x;
                 } else {
-                    line >>= (-now_block.x);
+                    line >>= (-s_now_block.x);
                 }
-                new_screen_buffer[now_block.y + y] |= line;
+                new_screen_buffer[s_now_block.y + y] |= line;
             }
         }
 
@@ -233,26 +236,26 @@ void update_scene_game(void)
     // draw new_screen_buffer per a frame
     if (1 == s_frame_count % DRAWING_DELAY_FRAME_COUNT) {
         uint8_t new_screen_buffer[SCREEN_HEIGHT];
-        memcpy(new_screen_buffer, old_screen_buffer, SCREEN_HEIGHT * sizeof(uint8_t));
+        memcpy(new_screen_buffer, s_old_screen_buffer, SCREEN_HEIGHT * sizeof(uint8_t));
 
-        const uint8_t* p_block_tiles = now_block.tile_of_zero_angle + (now_block.angle * BLOCK_WIDTH * BLOCK_HEIGHT);
+        const uint8_t* p_block_tiles = s_now_block.tile_of_zero_angle + (s_now_block.angle * BLOCK_WIDTH * BLOCK_HEIGHT);
         printf("block #%d\tx: %2d y: %2d\tangle: %3d\tframe: %6d\n",
-            (now_block.tile_of_zero_angle - BLOCK_TILES[0]) / (BLOCK_HEIGHT * ANGLE_SIZE * BLOCK_WIDTH),
-            now_block.x,
-            now_block.y,
-            now_block.angle * 90,
+            (s_now_block.tile_of_zero_angle - BLOCK_TILES[0]) / (BLOCK_HEIGHT * ANGLE_SIZE * BLOCK_WIDTH),
+            s_now_block.x,
+            s_now_block.y,
+            s_now_block.angle * 90,
             s_frame_count);
 
         // draw block on new_screen_buffer
         for (int y = 0; y < BLOCK_HEIGHT; ++y) {
-            if (now_block.y + y >= 0 && now_block.y + y < SCREEN_HEIGHT) {
+            if (s_now_block.y + y >= 0 && s_now_block.y + y < SCREEN_HEIGHT) {
                 uint8_t line = (p_block_tiles + y * BLOCK_WIDTH)[2] << 2 | (p_block_tiles + y * BLOCK_WIDTH)[1] << 1 | (p_block_tiles + y * BLOCK_WIDTH)[0];
-                if (now_block.x >= 0) {
-                    line <<= now_block.x;
+                if (s_now_block.x >= 0) {
+                    line <<= s_now_block.x;
                 } else {
-                    line >>= (-now_block.x);
+                    line >>= (-s_now_block.x);
                 }
-                new_screen_buffer[now_block.y + y] |= line;
+                new_screen_buffer[s_now_block.y + y] |= line;
             }
         }
 
@@ -263,7 +266,7 @@ void update_scene_game(void)
             goto lb_exit;
         }
 
-        if (!is_passable_down(new_screen_buffer, &now_block)) {
+        if (!is_passable_down(new_screen_buffer, &s_now_block)) {
             printf("collision occured\n");
 
             if ((new_screen_buffer[0] & 0x7f) > 0) {
@@ -309,12 +312,12 @@ void update_scene_game(void)
                 }
             }
 
-            memcpy(old_screen_buffer, new_screen_buffer, SCREEN_HEIGHT * sizeof(uint8_t));
+            memcpy(s_old_screen_buffer, new_screen_buffer, SCREEN_HEIGHT * sizeof(uint8_t));
 
-            now_block = generate_random_block();
+            s_now_block = generate_random_block();
         }
         else {
-            now_block.y++;
+            s_now_block.y++;
         }
 
         print_matrix(new_screen_buffer);
