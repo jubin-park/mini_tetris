@@ -151,9 +151,9 @@ void update_scene_intro(void)
 
 void update_scene_game(void)
 {
-    bool is_redrawing_needed = false;
-    uint8_t old_screen_buffer[SCREEN_HEIGHT] = { 0 };
-    block_t now_block = generate_random_block();
+    static bool is_redrawing_needed = false;
+    static uint8_t old_screen_buffer[SCREEN_HEIGHT] = { 0 };
+    static block_t now_block = generate_random_block();
 
     {// get switch key state
         if (read(get_driver_file_descriptor(DRIVER_PUSH_SWITCH), g_now_switch_states, sizeof(g_now_switch_states)) < 0) {
