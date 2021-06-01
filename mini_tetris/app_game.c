@@ -402,7 +402,8 @@ void update_scene_gameover(void)
             s_frame_count = 0;
             s_scene_frame_count = 0;
             s_score = 0;
-            clear_drivers();
+            
+            memset(s_old_screen_buffer, 0x0, SCREEN_HEIGHT * sizeof(uint8_t));
         }
 
         memcpy(g_old_switch_states, g_now_switch_states, sizeof(g_now_switch_states));
