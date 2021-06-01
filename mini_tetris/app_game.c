@@ -271,7 +271,7 @@ void update_scene_game(void)
             s_now_block.x,
             s_now_block.y,
             s_now_block.angle * 90,
-            s_frame_count
+            s_frame_count,
             s_level);
 
         // draw block on new_screen_buffer

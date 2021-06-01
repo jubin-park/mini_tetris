@@ -1,6 +1,8 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+#include <stdint.h>
+
 #define DELAY_NANOSEC_PER_FRAME (100000000L)
 
 enum {
