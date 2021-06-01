@@ -105,22 +105,22 @@ bool is_passable_left(const uint8_t* screen_buffer, const block_t* block)
     const uint8_t* const p_block_tiles = block->tile_of_zero_angle + (block->angle * BLOCK_WIDTH * BLOCK_HEIGHT);
 
     for (int8_t y = 0; y < BLOCK_HEIGHT; ++y) {
-        int8_t right_x = -1;
+        int8_t leftmost_x = -1;
 
-        for (int8_t x = BLOCK_WIDTH - 1; x >= 0; --x) {
+        for (int8_t x = 0; x < BLOCK_WIDTH; ++x) {
             if (1 == (p_block_tiles + y * BLOCK_WIDTH)[x]) {
-                right_x = x;
+                leftmost_x = x;
 
                 break;
             }
         }
 
-        if (right_x >= 0) {
-            const int8_t real_x = block->x + right_x;
+        if (leftmost_x >= 0) {
+            const int8_t real_x = block->x + leftmost_x;
             const int8_t real_y = block->y + y;
 
-            if (real_x >= SCREEN_WIDTH - 1
-                || (screen_buffer[real_y] & (1 << (real_x + 1))) > 0) {
+            if (real_x <= 0
+                || (screen_buffer[real_y] & (1 << (real_x - 1))) > 0) {
                 return false;
             }
         }
@@ -134,22 +134,22 @@ bool is_passable_right(const uint8_t* screen_buffer, const block_t* block)
     const uint8_t* const p_block_tiles = block->tile_of_zero_angle + (block->angle * BLOCK_WIDTH * BLOCK_HEIGHT);
 
     for (int8_t y = 0; y < BLOCK_HEIGHT; ++y) {
-        int8_t left_x = -1;
+        int8_t rightmost_x = -1;
 
-        for (int8_t x = 0; x < BLOCK_WIDTH; ++x) {
+        for (int8_t x = BLOCK_WIDTH - 1; x >= 0; --x) {
             if (1 == (p_block_tiles + y * BLOCK_WIDTH)[x]) {
-                left_x = x;
+                rightmost_x = x;
 
                 break;
             }
         }
 
-        if (left_x >= 0) {
-            const int8_t real_x = block->x + left_x;
+        if (rightmost_x >= 0) {
+            const int8_t real_x = block->x + rightmost_x;
             const int8_t real_y = block->y + y;
 
-            if (real_x <= 0
-                || (screen_buffer[real_y] & (1 << (real_x - 1))) > 0) {
+            if (real_x >= SCREEN_WIDTH - 1
+                || (screen_buffer[real_y] & (1 << (real_x + 1))) > 0) {
                 return false;
             }
         }

@@ -81,14 +81,14 @@ int main(void)
             if (is_switch_key_triggered(SWITCH_KEY_LEFT)) {
                 puts("LEFT");
                 if (is_passable_left(old_screen_buffer, &now_block)) {
-                    ++now_block.x;
+                    --now_block.x;
                     redraw = true;
                 }
             }
             else if (is_switch_key_triggered(SWITCH_KEY_RIGHT)) {
                 puts("RIGHT");
                 if (is_passable_right(old_screen_buffer, &now_block)) {
-                    --now_block.x;
+                    ++now_block.x;
                     redraw = true;
                 }
             }
