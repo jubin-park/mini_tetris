@@ -260,18 +260,15 @@ void update_scene_game(void)
         }
     }
 
-
-    printf("%6d\t%6d\tdelay=%d\tlevel=%d\n", s_frame_count, s_frame_count % DELAY_PER_LEVELS[s_level], DELAY_PER_LEVELS[s_level], s_level);
-
     // draw new_screen_buffer per a frame
     if (1 == s_frame_count % DELAY_PER_LEVELS[s_level]) {
-
-        puts("!!!!!!!!!!!");
+        update_led_lamp(s_frame_count % 4);
 
         uint8_t new_screen_buffer[SCREEN_HEIGHT];
         memcpy(new_screen_buffer, s_old_screen_buffer, SCREEN_HEIGHT * sizeof(uint8_t));
 
         const uint8_t* p_block_tiles = s_now_block.tile_of_zero_angle + (s_now_block.angle * BLOCK_WIDTH * BLOCK_HEIGHT);
+        //printf("%6d\t%6d\tdelay=%d\tlevel=%d\n", s_frame_count, s_frame_count % DELAY_PER_LEVELS[s_level], DELAY_PER_LEVELS[s_level], s_level);
         printf("block #%d\tx: %2d y: %2d\tangle: %3d\tframe: %6d\tlevel: %d\n",
             (s_now_block.tile_of_zero_angle - BLOCK_TILES[0]) / (BLOCK_HEIGHT * ANGLE_SIZE * BLOCK_WIDTH),
             s_now_block.x,

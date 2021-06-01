@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <stdio.h>
 #include <string.h>
 #include <sys/stat.h>
@@ -94,4 +95,13 @@ void update_score_text(const uint32_t original_score)
 int get_driver_file_descriptor(const driver_t driver)
 {
     return s_driver_file_descriptors[driver];
+}
+
+bool update_led_lamp(const uint8_t level)
+{
+    assert(level >= 0 && level < 4 && "invalid level");
+
+    const uint8_t data = 1 << level | 1 << (level + 4);
+    
+    return write(s_driver_file_descriptors[DRIVER_LED], &data, LED_DATA_LENGTH) >= 0;
 }
