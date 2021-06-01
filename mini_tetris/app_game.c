@@ -80,7 +80,7 @@ int main(void)
         .tv_nsec = DELAY_NANOSEC_PER_FRAME
     };
 
-    set_lcd_text(MESSAGE_INTRO[0], MESSAGE_INTRO[1]);
+    //set_lcd_text(MESSAGE_INTRO[0], MESSAGE_INTRO[1]);
 
     s_now_block = generate_random_block();
 
