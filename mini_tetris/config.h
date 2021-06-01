@@ -11,7 +11,7 @@ enum {
 
     DEFAULT_SCORE = 10,
 
-    MAX_LEVEL = 5
+    MAX_LEVEL = 5,
     LED_LEVEL = 4,
 };
 
