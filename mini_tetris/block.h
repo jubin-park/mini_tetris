@@ -29,6 +29,7 @@ typedef struct {
     const uint8_t* tile_of_zero_angle;
 } block_t;
 
+block_t generate_random_block(void);
 bool is_passable_down(const uint8_t* screen_buffer, const block_t* block);
 bool is_passable_left(const uint8_t* screen_buffer, const block_t* block);
 bool is_passable_right(const uint8_t* screen_buffer, const block_t* block);

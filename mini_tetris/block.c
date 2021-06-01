@@ -71,6 +71,32 @@ const uint8_t BLOCK_TILES[BLOCK_COUNT * BLOCK_HEIGHT * ANGLE_SIZE][BLOCK_WIDTH] 
     {0, 1, 0},
 };
 
+block_t generate_random_block(void)
+{
+    block_t block;
+
+    block.angle = random() % ANGLE_SIZE;
+    block.tile_of_zero_angle = BLOCK_TILES[(random() % BLOCK_COUNT) * BLOCK_HEIGHT * ANGLE_SIZE];
+
+    const uint8_t* const p_block_tiles = block.tile_of_zero_angle + (block.angle * BLOCK_WIDTH * BLOCK_HEIGHT);
+
+    int8_t real_height = 0;
+    for (int8_t y = 0; y < BLOCK_HEIGHT; ++y) {
+        for (int8_t x = 0; x < BLOCK_WIDTH; ++x) {
+            if (1 == (p_block_tiles + y * BLOCK_WIDTH)[x]) {
+                ++real_height;
+
+                break;
+            }
+        }
+    }
+
+    block.x = 0;
+    block.y = (-real_height);
+
+    return block;
+}
+
 bool is_passable_down(const uint8_t* screen_buffer, const block_t* block)
 {
     const uint8_t* const p_block_tiles = block->tile_of_zero_angle + (block->angle * BLOCK_WIDTH * BLOCK_HEIGHT);

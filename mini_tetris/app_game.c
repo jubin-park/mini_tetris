@@ -27,26 +27,29 @@ bool g_is_game_running = true;
 uint32_t g_score;
 
 void signal_exit(int sig);
-void display_matrix(const uint8_t* screen_buffer);
-bool render_matrix(const uint8_t* screen_buffer);
-block_t generate_block(void);
+void print_matrix(const uint8_t* screen_buffer);
+bool render_matrix_to_device(const uint8_t* screen_buffer);
 
 int main(void)
 {
     if (!open_drivers()) {
-        fprintf(stderr, "Try to execute it in sudo mode\n");
+        fprintf(stderr, "Try to execute it in sudo mode. Or Try to check if devices have been loaded.\n");
 
         goto lb_exit;
     }
 
+    // clear all drivers' bits data
     clear_drivers();
+
+    // register SIGINT handler
     (void)signal(SIGINT, signal_exit);
+
+    // generate random seed
     srandom((unsigned int)time(NULL));
 
-    block_t now_block = generate_block();
-    
     uint32_t frame_count = 0;
     uint8_t old_screen_buffer[SCREEN_HEIGHT] = { 0 };
+    block_t now_block = generate_random_block();
 
     struct timespec ts_sleep = {
         .tv_sec = 0,
@@ -55,7 +58,7 @@ int main(void)
 
     while (g_is_game_running) {
 
-        bool redraw = false;
+        bool is_redrawing_needed = false;
 
         {// get switch key state
             if (read(get_driver_file_descriptor(DRIVER_PUSH_SWITCH), g_now_switch_states, sizeof(g_now_switch_states)) < 0) {
@@ -71,35 +74,35 @@ int main(void)
                 puts("DOWN");
                 while (is_passable_down(old_screen_buffer, &now_block)) {
                     ++now_block.y;
-                    redraw = true;
+                    is_redrawing_needed = true;
                 }
             }
             else if (is_switch_key_triggered(SWITCH_KEY_LEFT)) {
                 puts("LEFT");
                 if (is_passable_left(old_screen_buffer, &now_block)) {
                     --now_block.x;
-                    redraw = true;
+                    is_redrawing_needed = true;
                 }
             }
             else if (is_switch_key_triggered(SWITCH_KEY_RIGHT)) {
                 puts("RIGHT");
                 if (is_passable_right(old_screen_buffer, &now_block)) {
                     ++now_block.x;
-                    redraw = true;
+                    is_redrawing_needed = true;
                 }
             }
             else if (is_switch_key_triggered(SWITCH_KEY_OK_OR_ROTATE)) {
                 puts("ROTATE");
                 if (is_rotatable_clockwise(old_screen_buffer, &now_block)) {
                     now_block.angle = (now_block.angle + 1) % ANGLE_SIZE;
-                    redraw = true;
+                    is_redrawing_needed = true;
                 }
             }
 
             memcpy(g_old_switch_states, g_now_switch_states, sizeof(g_now_switch_states));
         }
 
-        if (redraw) { // redraw when block moved or rotated
+        if (is_redrawing_needed) { // is_redrawing_needed when block moved or rotated
             printf("x: %2d\ty: %2d\n", now_block.x, now_block.y);
 
             uint8_t new_screen_buffer[SCREEN_HEIGHT];
@@ -121,7 +124,11 @@ int main(void)
             }
 
             // real drawing
-            render_matrix(new_screen_buffer);
+            if (!render_matrix_to_device(new_screen_buffer)) {
+                fprintf(stderr, "render_matrix_to_device() error\n");
+
+                goto lb_exit;
+            }
         }
 
         // draw new_screen_buffer per a frame
@@ -151,7 +158,11 @@ int main(void)
             }
 
             // real drawing
-            render_matrix(new_screen_buffer);
+            if (!render_matrix_to_device(new_screen_buffer)) {
+                fprintf(stderr, "render_matrix_to_device() error\n");
+
+                goto lb_exit;
+            }
 
             if (!is_passable_down(new_screen_buffer, &now_block)) {
                 printf("collision occured\n");
@@ -191,19 +202,23 @@ int main(void)
 
                     update_score_text(g_score);
 
-                    // when line is removed, redraw again
-                    render_matrix(new_screen_buffer);
+                    // when line is removed, is_redrawing_needed again
+                    if (!render_matrix_to_device(new_screen_buffer)) {
+                        fprintf(stderr, "render_matrix_to_device() error\n");
+
+                        goto lb_exit;
+                    }
                 }
 
                 memcpy(old_screen_buffer, new_screen_buffer, SCREEN_HEIGHT * sizeof(uint8_t));
 
-                now_block = generate_block();
+                now_block = generate_random_block();
             }
             else {
                 now_block.y++;
             }
 
-            display_matrix(new_screen_buffer);
+            print_matrix(new_screen_buffer);
         }
 
         nanosleep(&ts_sleep, NULL);
@@ -225,7 +240,7 @@ void signal_exit(int sig)
     g_is_game_running = false;
 }
 
-void display_matrix(const uint8_t* screen_buffer)
+void print_matrix(const uint8_t* screen_buffer)
 {
     for (int8_t y = 0; y < SCREEN_HEIGHT; ++y) {
         for (int8_t x = 0; x < SCREEN_WIDTH; ++x) {
@@ -235,49 +250,18 @@ void display_matrix(const uint8_t* screen_buffer)
     }
 }
 
-bool render_matrix(const uint8_t* screen_buffer)
+bool render_matrix_to_device(const uint8_t* screen_buffer)
 {
     uint8_t flip_buffer[SCREEN_HEIGHT];
     
-    for (int y = 0; y < SCREEN_HEIGHT; ++y) {
+    for (int8_t y = 0; y < SCREEN_HEIGHT; ++y) {
         const uint8_t bits = screen_buffer[y];
-        flip_buffer[y] = (bits & 1) << 6 | (bits & 64) >> 6
-                        | (bits & 2) << 4 | (bits & 32) >> 4
-                        | (bits & 4) << 2 | (bits & 16) >> 2
-                        | (bits & 8);
+
+        flip_buffer[y] = (bits & 0x1) << 6 | (bits & 0x40) >> 6
+                        | (bits & 0x2) << 4 | (bits & 0x20) >> 4
+                        | (bits & 0x4) << 2 | (bits & 0x10) >> 2
+                        | (bits & 0x8);
     }
 
-    if (write(get_driver_file_descriptor(DRIVER_DOT_MATRIX), flip_buffer, SCREEN_HEIGHT * sizeof(uint8_t)) < 0) {
-        fprintf(stderr, "render_matrix() error\n");
-        
-        return false;
-    }
-
-    return true;
-}
-
-block_t generate_block(void)
-{
-    block_t block;
-
-    block.angle = random() % ANGLE_SIZE;
-    block.tile_of_zero_angle = BLOCK_TILES[(random() % BLOCK_COUNT) * BLOCK_HEIGHT * ANGLE_SIZE];
-
-    const uint8_t* const p_block_tiles = block.tile_of_zero_angle + (block.angle * BLOCK_WIDTH * BLOCK_HEIGHT);
-
-    int8_t real_height = 0;
-    for (int8_t y = 0; y < BLOCK_HEIGHT; ++y) {
-        for (int8_t x = 0; x < BLOCK_WIDTH; ++x) {
-            if (1 == (p_block_tiles + y * BLOCK_WIDTH)[x]) {
-                ++real_height;
-
-                break;
-            }
-        }
-    }
-
-    block.x = 0;
-    block.y = (-real_height);
-
-    return block;
+    return write(get_driver_file_descriptor(DRIVER_DOT_MATRIX), flip_buffer, SCREEN_HEIGHT * sizeof(uint8_t)) >= 0;
 }
