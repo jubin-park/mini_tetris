@@ -16,7 +16,7 @@
 #include "driver.h"
 #include "scene.h"
 #include "switch_key.h"
-#include "dot10x7/test.h"
+#include "dot10x7/scene_gameover.h"
 #include "dot10x7/scene_intro.h"
 #include "dot10x7/scene_pause.h"
 
