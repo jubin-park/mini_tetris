@@ -163,6 +163,17 @@ void update_scene_intro(void)
             s_now_scene = SCENE_GAME;
             s_frame_count = 0;
             s_scene_frame_count = 0;
+            
+            s_level = 0;
+            {
+                char data[LCD_TEXT_DATA_LENGTH];
+                memset(data, ' ', LCD_TEXT_DATA_LENGTH);
+
+                snprintf(data, LCD_TEXT_DATA_LENGTH >> 1, MESSAGE_PLAYING[0], s_level);
+                snprintf(data + (LCD_TEXT_DATA_LENGTH >> 1), LCD_TEXT_DATA_LENGTH >> 1, MESSAGE_PLAYING[1], "");
+
+                set_lcd_text_one_line(data);
+            }
         }
 
         memcpy(g_old_switch_states, g_now_switch_states, sizeof(g_now_switch_states));
@@ -174,16 +185,17 @@ void update_scene_game(void)
     // level up
     for (int i = MAX_LEVEL; i >= 0; --i) {
         if (s_frame_count >= FRAME_PER_LEVEL_UPS[i] && s_frame_count < FRAME_PER_LEVEL_UPS[i + 1]) {
-            if (i != s_level) {
+            if (s_level != i) {
+                s_level = i;
+
                 char data[LCD_TEXT_DATA_LENGTH];
                 memset(data, ' ', LCD_TEXT_DATA_LENGTH);
 
-                snprintf(data, LCD_TEXT_DATA_LENGTH >> 1, MESSAGE_PLAYING[0], 123);
+                snprintf(data, LCD_TEXT_DATA_LENGTH >> 1, MESSAGE_PLAYING[0], s_level);
                 snprintf(data + (LCD_TEXT_DATA_LENGTH >> 1), LCD_TEXT_DATA_LENGTH >> 1, MESSAGE_PLAYING[1], "");
                 
                 set_lcd_text_one_line(data);
             }
-            s_level = i;
 
             break;
         }
