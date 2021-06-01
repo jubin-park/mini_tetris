@@ -68,7 +68,7 @@ static ssize_t lcd_text_write(struct file* inode, const char* gdata, size_t leng
 {
     int i;
     unsigned short int _s_value = 0;
-    unsigned char value[MAPPING_BYTE_LENGTH];
+    unsigned char value[MAPPING_BYTE_LENGTH + 1];
     const char *tmp = gdata;
 
     if (copy_from_user(&value, tmp, length)) {
@@ -83,6 +83,7 @@ static ssize_t lcd_text_write(struct file* inode, const char* gdata, size_t leng
         printk(KERN_ALERT "lcd_text_write\t%x = %x | %x\n", _s_value, (value[i] & 0xFF), (value[i + 1] & 0xFF));
 
         outw(_s_value, (unsigned int)s_lcd_text_addr + i);
+        i++;
     }
 
     return length;

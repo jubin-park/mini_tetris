@@ -34,6 +34,8 @@ int main(int argc, char **argv)
     
     dev = open(LCD_DEVICE, O_WRONLY);
     
+    printf("fild open success!\n");
+
     if (dev < 0) 
     {
         printf("Device open error : %s\n", LCD_DEVICE);
@@ -42,22 +44,39 @@ int main(int argc, char **argv)
     
     str_size = strlen(argv[1]);
     
+    printf("str_size = %d\n", str_size);
+    
     if (str_size > 0) 
     {
-        strncat(string, argv[1], str_size);
-        memset(string+str_size, ' ', LINE_BUFF - str_size);
+        size_t i;
+
+        for (i = 0; i < str_size; i++) {
+            string[i] = argv[1][i];
+        }
+        string[str_size] = '\0';
+
+        memset(string + str_size, ' ', LINE_BUFF - str_size);
     }
     
     str_size = strlen(argv[2]);
 
     if (str_size > 0) 
     {
-        strncat(string, argv[2], str_size);
+        size_t i;
+
+        for (i = 0; i < str_size; i++) {
+            string[i + LINE_BUFF] = argv[2][i];
+        }
+        string[LINE_BUFF + str_size] = '\0';
+        
         memset(string + LINE_BUFF + str_size, ' ', LINE_BUFF - str_size);
     }
     
-    write(dev,string, MAX_BUFF);
-    close(dev);
 
+    printf("strings = %s\n", string);
+    printf("write\n");
+    write(dev, string, MAX_BUFF);
+    close(dev);
+    
     return(0);
 }
