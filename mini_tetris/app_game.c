@@ -125,11 +125,11 @@ void update_scene_intro(void)
 {
     static int s_frame = 0;
 
-    if (0 == s_frame_count % 3) {
+    //if (0 == s_frame_count % 2) {
         write(get_driver_file_descriptor(DRIVER_DOT_MATRIX), game_intro_data[s_frame], SCREEN_HEIGHT * sizeof(uint8_t));
 
         s_frame = (s_frame + 1) % GAME_INTRO_FRAME_COUNT;
-    }
+    //}
 }
 
 void update_scene_game(void)
