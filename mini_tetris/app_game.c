@@ -125,10 +125,11 @@ void update_scene_intro(void)
 {
     int frame = 0;
 
+    printf("frame = %d\n", frame);
+
     if (0 == s_frame_count % 5) {
         write(get_driver_file_descriptor(DRIVER_DOT_MATRIX), test_data[frame], SCREEN_HEIGHT * sizeof(uint8_t));
-
-        printf("frame = %d", frame);
+            
         frame = (frame + 1) % TEST_FRAME_COUNT;
     }
 }
