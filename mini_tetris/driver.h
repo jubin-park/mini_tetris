@@ -2,9 +2,10 @@
 #define DRIVER_H
 
 #include <unistd.h>
+#include <stdint.h>
+#include <stdbool.h>
 
-#include "stdint.h"
-#include "stdbool.h"
+#include "config.h"
 
 enum {
     LED_DATA_LENGTH = 1,

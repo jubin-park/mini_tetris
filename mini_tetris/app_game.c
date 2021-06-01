@@ -179,7 +179,7 @@ void update_scene_game(void)
                 memset(data, ' ', LCD_TEXT_DATA_LENGTH);
 
                 snprintf(data, LCD_TEXT_DATA_LENGTH >> 1, MESSAGE_PLAYING[0], 123);
-                snprintf(data + (LCD_TEXT_DATA_LENGTH >> 1), LCD_TEXT_DATA_LENGTH >> 1, MESSAGE_PLAYING[1]);
+                snprintf(data + (LCD_TEXT_DATA_LENGTH >> 1), LCD_TEXT_DATA_LENGTH >> 1, MESSAGE_PLAYING[1], "");
                 
                 set_lcd_text_one_line(data);
             }
