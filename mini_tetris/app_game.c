@@ -248,10 +248,10 @@ bool render_matrix(const uint8_t* screen_buffer)
     
     for (int i = 0; i < SCREEN_HEIGHT; ++i) {
         const uint8_t bits = screen_buffer[i];
-        flip_buffer[i] = ((bits & 1) << 7 | (bits & 128) >> 7
-                        | (bits & 2) << 5 | (bits & 64) >> 5
-                        | (bits & 4) << 3 | (bits & 32) >> 3
-                        | (bits & 8) << 1 | (bits & 16) >> 1) >> 1;
+        flip_buffer[i] = (bits & 1) << 6 | (bits & 64) >> 6
+                        | (bits & 2) << 4 | (bits & 32) >> 4
+                        | (bits & 4) << 2 | (bits & 16) >> 2
+                        | (bits & 8);
     }
 
     if (write(get_driver_file_descriptor(DRIVER_DOT_MATRIX), flip_buffer, SCREEN_HEIGHT * sizeof(uint8_t)) < 0) {
