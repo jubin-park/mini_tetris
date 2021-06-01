@@ -105,3 +105,26 @@ bool update_led_lamp(const uint8_t level)
     
     return write(s_driver_file_descriptors[DRIVER_LED], &data, LED_DATA_LENGTH) >= 0;
 }
+
+bool set_lcd_text(const char* line1, const char* line2)
+{
+    char data[LCD_TEXT_DATA_LENGTH];
+    
+    memset(data, ' ', LCD_TEXT_DATA_LENGTH);
+
+    {
+        char* p = data;
+        while (*line1 != '\0') {
+            *p++ = *line1++;
+        }
+    }
+
+    {
+        char* p = data + (LCD_TEXT_DATA_LENGTH >> 1);
+        while (*line2 != '\0') {
+            *p++ = *line2++;
+        }
+    }
+
+    write(s_driver_file_descriptors[DRIVER_LCD_TEXT], data, LCD_TEXT_DATA_LENGTH);
+}

@@ -25,16 +25,18 @@ extern uint8_t g_score_text[SEVEN_SEGMENT_DATA_LENGTH];
 extern uint8_t g_now_switch_states[SWITCH_KEY_SIZE];
 extern uint8_t g_old_switch_states[SWITCH_KEY_SIZE];
 
-static bool s_is_game_running = true;
+static const char* MESSAGE_INTRO[2] = { "* TETRIS GAME *", " PRESS OK START" };
+static const char* MESSAGE_PAUSE[2] = { "     PAUSE", "SHUTDOWN? (Y/N)" };
+static const char* MESSAGE_PLAYING[2] = { "    LEVEL #%d", "CANCEL TO PAUSE" }; // warning! format
+static const char* MESSAGE_GAMEOVER[2] = { "   GAME OVER", "PRESS OK REGAME" };
 
+static bool s_is_game_running = true;
 static uint32_t s_score;
 static uint32_t s_frame_count;
-
 static uint8_t s_old_screen_buffer[SCREEN_HEIGHT];
 static scene_t s_now_scene = SCENE_INTRO;
 static block_t s_now_block;
 static uint8_t s_lamp_index;
-
 static uint8_t s_level;
 
 void signal_exit(int sig);
@@ -67,6 +69,8 @@ int main(void)
         .tv_sec = 0,
         .tv_nsec = DELAY_NANOSEC_PER_FRAME
     };
+
+    set_lcd_text(MESSAGE_INTRO[0], MESSAGE_INTRO[1]);
 
     s_now_block = generate_random_block();
 
@@ -383,7 +387,8 @@ void update_scene_pause(void)
             s_now_scene = SCENE_INTRO;
             s_frame_count = 0;
             s_scene_frame_count = 0;
-            s_lamp_index = 0;   
+            s_lamp_index = 0;
+            clear_drivers();
         }
         else if (is_switch_key_triggered(SWITCH_KEY_0)
                     || is_switch_key_triggered(SWITCH_KEY_2)
