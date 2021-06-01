@@ -58,6 +58,16 @@ int main(void)
     // clear all drivers' bits data
     clear_drivers();
 
+    {
+        char data[LCD_TEXT_DATA_LENGTH];
+        memset(data, ' ', LCD_TEXT_DATA_LENGTH);
+
+        snprintf(data, LCD_TEXT_DATA_LENGTH >> 1, MESSAGE_PLAYING[0], 123);
+        snprintf(data + (LCD_TEXT_DATA_LENGTH >> 1), LCD_TEXT_DATA_LENGTH >> 1, MESSAGE_PLAYING[1]);
+
+        set_lcd_text_one_line(data);
+    }
+
     // register SIGINT handler
     (void)signal(SIGINT, signal_exit);
 

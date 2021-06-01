@@ -66,9 +66,9 @@ void clear_drivers(void)
     write(s_driver_file_descriptors[DRIVER_BUZZER], zeros, DRIVER_DATA_LENGTHS[DRIVER_BUZZER]);
     write(s_driver_file_descriptors[DRIVER_PUSH_SWITCH], zeros, DRIVER_DATA_LENGTHS[DRIVER_PUSH_SWITCH]);
 
-    //uint8_t blanks[LCD_TEXT_DATA_LENGTH];
-    //memset(blanks, ' ', DRIVER_DATA_LENGTHS[DRIVER_LCD_TEXT]);
-    //write(s_driver_file_descriptors[DRIVER_LCD_TEXT], blanks, DRIVER_DATA_LENGTHS[DRIVER_LCD_TEXT]);
+    char blanks[LCD_TEXT_DATA_LENGTH];
+    memset(blanks, ' ', LCD_TEXT_DATA_LENGTH);
+    write(s_driver_file_descriptors[DRIVER_LCD_TEXT], blanks, LCD_TEXT_DATA_LENGTH);
 }
 
 void update_score_text(const uint32_t original_score)
@@ -97,9 +97,9 @@ int get_driver_file_descriptor(const driver_t driver)
     return s_driver_file_descriptors[driver];
 }
 
-bool update_led_lamp(const uint8_t level)
+bool update_led_lamp(uint8_t level)
 {
-    assert(level >= 0 && level < 4 && "invalid level");
+    level %= 4;
 
     const uint8_t data = 1 << level | 1 << (level + 4);
     
@@ -126,5 +126,10 @@ bool set_lcd_text(const char* line1, const char* line2)
         }
     }
 
-    write(s_driver_file_descriptors[DRIVER_LCD_TEXT], data, LCD_TEXT_DATA_LENGTH);
+    return write(s_driver_file_descriptors[DRIVER_LCD_TEXT], data, LCD_TEXT_DATA_LENGTH) >= 0;
+}
+
+bool set_lcd_text_one_line(const char* data)
+{
+    return write(s_driver_file_descriptors[DRIVER_LCD_TEXT], data, LCD_TEXT_DATA_LENGTH) >= 0;
 }
