@@ -350,6 +350,8 @@ void update_scene_pause(void)
     write(get_driver_file_descriptor(DRIVER_DOT_MATRIX), scene_pause_data[s_scene_frame], SCREEN_HEIGHT * sizeof(uint8_t));
     s_scene_frame = (s_scene_frame + 1) % SCENE_PAUSE_FRAME_COUNT;
     
+    printf("PAUSED\n");
+
     {// get switch key state
         if (read(get_driver_file_descriptor(DRIVER_PUSH_SWITCH), g_now_switch_states, sizeof(g_now_switch_states)) < 0) {
             fprintf(stderr, "Failed to read switch key\n");
