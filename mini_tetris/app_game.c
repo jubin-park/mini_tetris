@@ -401,6 +401,8 @@ void update_scene_gameover(void)
             s_now_scene = SCENE_INTRO;
             s_frame_count = 0;
             s_scene_frame_count = 0;
+            s_score = 0;
+            clear_drivers();
         }
 
         memcpy(g_old_switch_states, g_now_switch_states, sizeof(g_now_switch_states));
