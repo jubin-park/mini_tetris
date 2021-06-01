@@ -190,11 +190,7 @@ bool is_rotatable_clockwise(const uint8_t* screen_buffer, const block_t* block)
     const uint8_t* const p_block_tiles = block->tile_of_zero_angle + (next_angle * BLOCK_WIDTH * BLOCK_HEIGHT);
     
     for (int8_t y = 0; y < BLOCK_HEIGHT; ++y) {
-        const int8_t real_y = block->y + y;
-
         for (int8_t x = 0; x < BLOCK_WIDTH; ++x) {
-            const int8_t real_x = block->x + x;
-
             if ((p_block_tiles + y * BLOCK_WIDTH)[x] > 0 // now filled with 1
                 && (screen_buffer[block->y + y] & (1 << (block->x + x))) > 0) {
 
