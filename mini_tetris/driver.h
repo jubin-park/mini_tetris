@@ -35,6 +35,6 @@ void clear_drivers(void);
 void update_score_text(const uint32_t original_score);
 int get_driver_file_descriptor(const driver_t driver);
 
-void update_led_lamp(uint8_t level);
+bool update_led_lamp(uint8_t level);
 
 #endif /* DRIVER_H */
