@@ -28,6 +28,7 @@ uint32_t g_score;
 
 void signal_exit(int sig);
 void display_matrix(const uint8_t* screen_buffer);
+bool render_matrix(const uint8_t* screen_buffer);
 
 int main(void)
 {
@@ -124,11 +125,7 @@ int main(void)
             }
 
             // real drawing
-            if (write(get_driver_file_descriptor(DRIVER_DOT_MATRIX), new_screen_buffer, SCREEN_HEIGHT * sizeof(uint8_t)) < 0) {
-                fprintf(stderr, "write() error\n");
-                
-                goto lb_exit;
-            }
+            render_matrix(new_screen_buffer);
         }
 
         // draw new_screen_buffer per a frame
@@ -158,11 +155,7 @@ int main(void)
             }
 
             // real drawing
-            if (write(get_driver_file_descriptor(DRIVER_DOT_MATRIX), new_screen_buffer, SCREEN_HEIGHT * sizeof(uint8_t)) < 0) {
-                fprintf(stderr, "write() error\n");
-                
-                goto lb_exit;
-            }
+            render_matrix(new_screen_buffer);
 
             if (!is_passable_down(new_screen_buffer, &now_block)) {
                 printf("collision occured\n");
@@ -208,11 +201,7 @@ int main(void)
                     update_score_text(g_score);
 
                     // when line is removed, redraw again
-                    if (write(get_driver_file_descriptor(DRIVER_DOT_MATRIX), new_screen_buffer, SCREEN_HEIGHT * sizeof(uint8_t)) < 0) {
-                        fprintf(stderr, "write() error\n");
-                        
-                        goto lb_exit;
-                    }
+                    render_matrix(new_screen_buffer);
                 }
 
                 memcpy(old_screen_buffer, new_screen_buffer, SCREEN_HEIGHT * sizeof(uint8_t));
@@ -252,17 +241,24 @@ void display_matrix(const uint8_t* screen_buffer)
         putchar('\n');
     }
 }
-/*
-bool render_matrix(const uint8_t* screen_bufer)
+
+bool render_matrix(const uint8_t* screen_buffer)
 {
     uint8_t flip_buffer[SCREEN_HEIGHT];
-
-
-
-    if (write(get_driver_file_descriptor(DRIVER_DOT_MATRIX), screen_buffer, SCREEN_HEIGHT * sizeof(uint8_t)) < 0) {
-        fprintf(stderr, "write() error\n");
-        
-        goto lb_exit;
+    
+    for (int i = 0; i < SCREEN_HEIGHT; ++i) {
+        const uint8_t bits = screen_buffer[i];
+        flip_buffer[i] = ((bits & 1) << 7 | (bits & 128) >> 7
+                        | (bits & 2) << 5 | (bits & 64) >> 5
+                        | (bits & 4) << 3 | (bits & 32) >> 3
+                        | (bits & 8) << 1 | (bits & 16) >> 1) >> 1;
     }
+
+    if (write(get_driver_file_descriptor(DRIVER_DOT_MATRIX), flip_buffer, SCREEN_HEIGHT * sizeof(uint8_t)) < 0) {
+        fprintf(stderr, "render_matrix() error\n");
+        
+        return false;
+    }
+
+    return true;
 }
-*/
