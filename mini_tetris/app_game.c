@@ -60,6 +60,8 @@ int main(void)
 
     while (s_is_game_running) {
 
+        ++s_frame_count;
+
         switch (s_now_scene) {
             case SCENE_INTRO:
                 update_scene_intro();
@@ -77,7 +79,6 @@ int main(void)
         }
         
         nanosleep(&ts_sleep, NULL);
-        ++s_frame_count;
     }
 
 lb_exit:
@@ -125,11 +126,27 @@ void update_scene_intro(void)
 {
     static int s_frame = 0;
 
-    //if (0 == s_frame_count % 2) {
-        write(get_driver_file_descriptor(DRIVER_DOT_MATRIX), game_intro_data[s_frame], SCREEN_HEIGHT * sizeof(uint8_t));
-        print_matrix(game_intro_data[s_frame]);
-        s_frame = (s_frame + 1) % GAME_INTRO_FRAME_COUNT;
-    //}    
+    write(get_driver_file_descriptor(DRIVER_DOT_MATRIX), game_intro_data[s_frame], SCREEN_HEIGHT * sizeof(uint8_t));
+    s_frame = (s_frame + 1) % GAME_INTRO_FRAME_COUNT;
+    
+    {// get switch key state
+        if (read(get_driver_file_descriptor(DRIVER_PUSH_SWITCH), g_now_switch_states, sizeof(g_now_switch_states)) < 0) {
+            fprintf(stderr, "Failed to read switch key\n");
+
+            goto lb_exit;
+        }
+
+        if (is_switch_key_triggered(SWITCH_KEY_OK_OR_ROTATE)) {
+            puts("START");
+            
+            s_now_scene = SCENE_GAME;
+            s_frame_count = 0;
+        }
+
+        memcpy(g_old_switch_states, g_now_switch_states, sizeof(g_now_switch_states));
+
+        
+    }
 }
 
 void update_scene_game(void)
@@ -214,7 +231,7 @@ void update_scene_game(void)
     }
 
     // draw new_screen_buffer per a frame
-    if (0 == s_frame_count % DRAWING_DELAY_FRAME_COUNT) {
+    if (1 == s_frame_count % DRAWING_DELAY_FRAME_COUNT) {
         uint8_t new_screen_buffer[SCREEN_HEIGHT];
         memcpy(new_screen_buffer, old_screen_buffer, SCREEN_HEIGHT * sizeof(uint8_t));
 
