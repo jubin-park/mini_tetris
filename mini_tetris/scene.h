@@ -5,7 +5,7 @@ typedef enum {
     SCENE_INTRO,
     SCENE_GAME,
     SCENE_PAUSE,
-    SCENE_GAME_OVER,
+    SCENE_GAMEOVER,
 
     /* SIZE */
     SCENE_SIZE
