@@ -125,8 +125,6 @@ void update_scene_intro(void)
 {
     static int s_frame = 0;
 
-    printf("s_frame = %d\n", s_frame);
-
     if (0 == s_frame_count % 5) {
         write(get_driver_file_descriptor(DRIVER_DOT_MATRIX), test_data[s_frame], SCREEN_HEIGHT * sizeof(uint8_t));
 
