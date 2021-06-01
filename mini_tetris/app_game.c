@@ -262,6 +262,9 @@ void update_scene_game(void)
 
     // draw new_screen_buffer per a frame
     if (1 == s_frame_count % DELAY_PER_LEVELS[s_level]) {
+
+        puts("!!!!!!!!!!!");
+
         uint8_t new_screen_buffer[SCREEN_HEIGHT];
         memcpy(new_screen_buffer, s_old_screen_buffer, SCREEN_HEIGHT * sizeof(uint8_t));
 
