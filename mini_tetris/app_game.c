@@ -58,18 +58,6 @@ int main(void)
     // clear all drivers' bits data
     clear_drivers();
 
-    {
-        char data[LCD_TEXT_DATA_LENGTH];
-        memset(data, ' ', LCD_TEXT_DATA_LENGTH);
-
-        snprintf(data, LCD_TEXT_DATA_LENGTH >> 1, MESSAGE_PLAYING[0], 123);
-        data[strlen(data)] = ' ';
-        snprintf(data + (LCD_TEXT_DATA_LENGTH >> 1), LCD_TEXT_DATA_LENGTH >> 1, MESSAGE_PLAYING[1]);
-        data[strlen(data + (LCD_TEXT_DATA_LENGTH >> 1))] = ' ';
-
-        set_lcd_text_one_line(data);
-    }
-
     // register SIGINT handler
     (void)signal(SIGINT, signal_exit);
 
@@ -82,7 +70,7 @@ int main(void)
         .tv_nsec = DELAY_NANOSEC_PER_FRAME
     };
 
-    //set_lcd_text(MESSAGE_INTRO[0], MESSAGE_INTRO[1]);
+    set_lcd_text(MESSAGE_INTRO[0], MESSAGE_INTRO[1]);
 
     s_now_block = generate_random_block();
 
@@ -186,7 +174,17 @@ void update_scene_game(void)
     // level up
     for (int i = MAX_LEVEL; i >= 0; --i) {
         if (s_frame_count >= FRAME_PER_LEVEL_UPS[i] && s_frame_count < FRAME_PER_LEVEL_UPS[i + 1]) {
+            if (i != s_level) {
+                char data[LCD_TEXT_DATA_LENGTH];
+                memset(data, ' ', LCD_TEXT_DATA_LENGTH);
+
+                snprintf(data, LCD_TEXT_DATA_LENGTH >> 1, MESSAGE_PLAYING[0], 123);
+                snprintf(data + (LCD_TEXT_DATA_LENGTH >> 1), LCD_TEXT_DATA_LENGTH >> 1, MESSAGE_PLAYING[1]);
+                
+                set_lcd_text_one_line(data);
+            }
             s_level = i;
+
             break;
         }
     }
@@ -242,6 +240,8 @@ void update_scene_game(void)
             puts("PAUSED");
             s_now_scene = SCENE_PAUSE;
 
+            set_lcd_text(MESSAGE_PAUSE[0], MESSAGE_PAUSE[1]);
+
             goto lb_exit;
         }
 
@@ -280,7 +280,7 @@ void update_scene_game(void)
     // draw new_screen_buffer per a frame
     if (1 == s_frame_count % DELAY_PER_LEVELS[s_level]) {
         update_led_lamp(s_lamp_index);
-        s_lamp_index = (s_lamp_index + 1) % 4;
+        s_lamp_index = (s_lamp_index + 1) % LED_LEVEL;
 
         uint8_t new_screen_buffer[SCREEN_HEIGHT];
         memcpy(new_screen_buffer, s_old_screen_buffer, SCREEN_HEIGHT * sizeof(uint8_t));
@@ -322,6 +322,7 @@ void update_scene_game(void)
                 puts("== GAME OVER ==");
 
                 s_now_scene = SCENE_GAMEOVER;
+                set_lcd_text(MESSAGE_GAMEOVER[0], MESSAGE_GAMEOVER[1]);
 
                 goto lb_exit;
             }
@@ -401,6 +402,8 @@ void update_scene_pause(void)
             s_scene_frame_count = 0;
             s_lamp_index = 0;
             clear_drivers();
+
+            set_lcd_text(MESSAGE_INTRO[0], MESSAGE_INTRO[1]);
         }
         else if (is_switch_key_triggered(SWITCH_KEY_0)
                     || is_switch_key_triggered(SWITCH_KEY_2)
@@ -439,8 +442,10 @@ void update_scene_gameover(void)
             s_score = 0;
             s_lamp_index = 0;
             
-            memset(s_old_screen_buffer, 0x0, SCREEN_HEIGHT * sizeof(uint8_t));
+            memset(s_old_screen_buffer, 0x0, SCREEN_HEIGHT * sizeof(uint8_t)); // clear board
             clear_drivers();
+
+            set_lcd_text(MESSAGE_INTRO[0], MESSAGE_INTRO[1]);
         }
 
         memcpy(g_old_switch_states, g_now_switch_states, sizeof(g_now_switch_states));

@@ -99,7 +99,7 @@ int get_driver_file_descriptor(const driver_t driver)
 
 bool update_led_lamp(uint8_t level)
 {
-    level %= 4;
+    level %= LED_LEVEL;
 
     const uint8_t data = 1 << level | 1 << (level + 4);
     

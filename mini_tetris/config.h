@@ -12,6 +12,7 @@ enum {
     DEFAULT_SCORE = 10,
 
     MAX_LEVEL = 5
+    LED_LEVEL = 4,
 };
 
 static const uint32_t FRAME_PER_LEVEL_UPS[1 + MAX_LEVEL + 1] = { 0, 300, 560, 780, 900, 1060, UINT32_MAX };
