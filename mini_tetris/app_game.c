@@ -27,7 +27,7 @@ extern uint8_t g_old_switch_states[SWITCH_KEY_SIZE];
 
 static const char* MESSAGE_INTRO[2] = { "* TETRIS GAME *", " PRESS OK START" };
 static const char* MESSAGE_PAUSE[2] = { "     PAUSE", "SHUTDOWN? (Y/N)" };
-static const char* MESSAGE_PLAYING[2] = { "    LEVEL #%d", "CANCEL TO PAUSE" }; // warning! format
+static const char* MESSAGE_PLAYING[2] = { "    LEVEL #%d", "CANCEL TO PAUSE " }; // warning! format
 static const char* MESSAGE_GAMEOVER[2] = { "   GAME OVER", "PRESS OK REGAME" };
 
 static bool s_is_game_running = true;
