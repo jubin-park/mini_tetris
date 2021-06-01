@@ -67,14 +67,14 @@ int main(void)
             if (is_switch_key_triggered(SWITCH_KEY_UP)) {
                 puts("UP");
             }
-            if (is_switch_key_triggered(SWITCH_KEY_DOWN)) {
+            else if (is_switch_key_triggered(SWITCH_KEY_DOWN)) {
                 puts("DOWN");
                 while (is_passable_down(old_screen_buffer, &now_block)) {
                     ++now_block.y;
                     redraw = true;
                 }
             }
-            if (is_switch_key_triggered(SWITCH_KEY_LEFT)) {
+            else if (is_switch_key_triggered(SWITCH_KEY_LEFT)) {
                 puts("LEFT");
                 if (is_passable_left(old_screen_buffer, &now_block)) {
                     --now_block.x;
@@ -88,7 +88,7 @@ int main(void)
                     redraw = true;
                 }
             }
-            if (is_switch_key_triggered(SWITCH_KEY_OK_OR_ROTATE)) {
+            else if (is_switch_key_triggered(SWITCH_KEY_OK_OR_ROTATE)) {
                 puts("ROTATE");
                 if (is_rotatable_clockwise(old_screen_buffer, &now_block)) {
                     now_block.angle = (now_block.angle + 1) % ANGLE_SIZE;
@@ -114,7 +114,7 @@ int main(void)
                     if (now_block.x >= 0) {
                         line <<= now_block.x;
                     } else {
-                        line <<= (-now_block.x);
+                        line >>= (-now_block.x);
                     }
                     new_screen_buffer[now_block.y + y] |= line;
                 }
@@ -144,7 +144,7 @@ int main(void)
                     if (now_block.x >= 0) {
                         line <<= now_block.x;
                     } else {
-                        line <<= (-now_block.x);
+                        line >>= (-now_block.x);
                     }
                     new_screen_buffer[now_block.y + y] |= line;
                 }
@@ -160,8 +160,6 @@ int main(void)
                     puts("== GAME OVER ==");
                     goto lb_exit;
                 }
-
-                now_block = generate_block();
 
                 int8_t removed_height = 0;
                 
@@ -198,6 +196,8 @@ int main(void)
                 }
 
                 memcpy(old_screen_buffer, new_screen_buffer, SCREEN_HEIGHT * sizeof(uint8_t));
+
+                now_block = generate_block();
             }
             else {
                 now_block.y++;
@@ -262,6 +262,8 @@ block_t generate_block(void)
 
     block.angle = random() % ANGLE_SIZE;
     block.tile_of_zero_angle = BLOCK_TILES[(random() % BLOCK_COUNT) * BLOCK_HEIGHT * ANGLE_SIZE];
+
+    const uint8_t* const p_block_tiles = block.tile_of_zero_angle + (block.angle * BLOCK_WIDTH * BLOCK_HEIGHT);
 
     int8_t real_height = 0;
     for (int8_t y = 0; y < BLOCK_HEIGHT; ++y) {
