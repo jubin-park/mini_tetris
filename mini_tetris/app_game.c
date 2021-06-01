@@ -123,15 +123,14 @@ bool render_matrix_to_device(const uint8_t* screen_buffer)
 
 void update_scene_intro(void)
 {
-    int frame = 0;
+    static int s_frame = 0;
 
-    printf("frame = %d\n", frame);
+    printf("s_frame = %d\n", s_frame);
 
     if (0 == s_frame_count % 5) {
-        write(get_driver_file_descriptor(DRIVER_DOT_MATRIX), test_data[frame], SCREEN_HEIGHT * sizeof(uint8_t));
+        write(get_driver_file_descriptor(DRIVER_DOT_MATRIX), test_data[s_frame], SCREEN_HEIGHT * sizeof(uint8_t));
 
-        ++frame;
-        frame %= TEST_FRAME_COUNT;
+        s_frame = (s_frame + 1) %= TEST_FRAME_COUNT;
     }
 }
 
