@@ -1,5 +1,12 @@
 # ![icon](img/icon.png) mini_tetris
 
+***Announcement***
+> 우리 팀은 보드를 가지고 있지 않아 더 이상의 업데이트가 불가능합니다. 테트로미노 90도 회전 시 가끔 테트로미노끼리 한 칸 겹치는 버그, 회전할 수 없는 상황임에도 회전이 되는 버그가 있는데 마감기한 내에 고치지 못했습니다. 이 점을 유의하고 코드를 참고하십시오.
+
+## Developers
+* [YoungHun Go](https://github.com/younghoongo)
+* [Jubin Park](https://github.com/jubin-park)
+  
 ## Demo Video
 
 [![thumbnail](img/video_thumbnail.png)](https://youtu.be/--UvrgKFGB0)
@@ -76,7 +83,7 @@
 * Black/White 포맷의 1 Row - 8 Bit 포맷으로 변환하는 python3 코드 *gen_dot10x7_headers.py* 작성 
 `./res/*.h -> ./dot10x7/*.h` 로 변환
 
-## 명령어
+## Command
 
 `make`
 
